@@ -1,0 +1,568 @@
+{
+  "lastUpdated": "2026-04-08",
+  "primaryReference": "EXFO",
+
+  "events": [
+    {
+      "id": "connector-bulkhead",
+      "name": "Connector / Bulkhead",
+      "category": "reflective",
+      "traceAppearance": "Spike (peak) upward above the backscatter line, followed by a step down. The spike is the Fresnel reflection. The step down is the insertion loss.",
+      "commonCauses": [
+        "Mated connector pair",
+        "Bulkhead adapter in splice enclosure or panel",
+        "Mechanical splice",
+        "Any air gap between two fiber end faces"
+      ],
+      "fieldNotes": "Height of the spike indicates reflectance — taller spike means more reflection (worse). A clean APC connection may show almost no spike. Dirty or damaged connectors show large spikes. Always inspect and clean before testing.",
+      "warningFlag": "Never connect APC to UPC — physical damage will result. APC = green, UPC = blue.",
+      "nerdStuff": {
+        "title": "Fresnel Reflection",
+        "formulas": [
+          {
+            "name": "Fresnel Reflection",
+            "expression": "R = ((n1 - n2) / (n1 + n2))^2",
+            "variables": [
+              { "symbol": "R", "meaning": "Reflectance (ratio, not dB)" },
+              { "symbol": "n1", "meaning": "Refractive index of fiber core (glass)" },
+              { "symbol": "n2", "meaning": "Refractive index of gap medium (air ≈ 1.0)" }
+            ],
+            "example": "Glass-to-air: n1=1.46, n2=1.0 → R ≈ 3.4% → about -14.7 dB reflectance"
+          }
+        ],
+        "explanation": "Fresnel reflection occurs whenever light crosses a boundary between materials with different refractive indices. Glass-to-air at a connector end face produces a strong reflection. APC connectors reduce this by angling the end face 8°, directing the reflection away from the fiber core and achieving -60 dB or better return loss versus -40 to -55 dB for UPC."
+      }
+    },
+    {
+      "id": "fusion-splice",
+      "name": "Fusion Splice",
+      "category": "non-reflective",
+      "traceAppearance": "Small step down (loss) with no spike. On a well-made fusion splice the step may be too small to see at typical trace scales. No reflection peak.",
+      "commonCauses": [
+        "Thermally fused fiber joint",
+        "Expected at every splice point in OSP cable"
+      ],
+      "fieldNotes": "A good fusion splice shows 0.02–0.10 dB loss. If you see a spike at a fusion splice location, there is contamination, an air bubble, or a bad cleave. Bidirectional test required for true loss value — unidirectional can show a gainer or exaggerated loss due to MFD mismatch between fiber types.",
+      "nerdStuff": {
+        "title": "Why Fusion Splices Show Gainers",
+        "formulas": [
+          {
+            "name": "True Splice Loss (Bidirectional Average)",
+            "expression": "Loss_true = (A1 + A2) / 2",
+            "variables": [
+              { "symbol": "A1", "meaning": "Loss measured from direction 1 (may include MFD artifact)" },
+              { "symbol": "A2", "meaning": "Loss measured from direction 2 (may show gainer)" }
+            ],
+            "example": "A1 = 0.35 dB, A2 = -0.10 dB → True loss = (0.35 + (-0.10)) / 2 = 0.125 dB"
+          }
+        ],
+        "explanation": "When two fibers with different Mode Field Diameters (MFD) are spliced — such as G.652.D to G.657 bend-insensitive — the OTDR captures different backscatter volumes from each side. This creates an apparent gain or exaggerated loss that is an optical illusion, not a real measurement. The effect is proportional to the MFD difference. Bidirectional averaging per ANSI/TIA/EIA-455-8-2000 is required to remove this artifact."
+      }
+    },
+    {
+      "id": "mechanical-splice",
+      "name": "Mechanical Splice",
+      "category": "reflective",
+      "traceAppearance": "Small spike (partial reflection from index-matching gel interface) followed by a loss step. Spike is smaller than a connector but larger than a fusion splice.",
+      "commonCauses": [
+        "Field-expedient splice using index-matching gel and alignment sleeve",
+        "Temporary repair"
+      ],
+      "fieldNotes": "Higher loss than fusion (typically 0.2–0.5 dB). Index-matching gel degrades over time, increasing reflection and loss. Flag mechanical splices in documentation — they are maintenance liabilities in OSP. Older mechanical splices with degraded gel may show progressively larger spikes on successive test dates.",
+      "nerdStuff": {
+        "title": "Index-Matching Gel",
+        "explanation": "Mechanical splices use an index-matching gel (IOR ≈ 1.46) to fill the air gap between two fiber ends held in alignment. This nearly eliminates the Fresnel reflection at the glass-air boundary. However, gel degrades with temperature cycling, moisture intrusion, and UV exposure. As gel degrades, the interface reverts toward glass-to-air, increasing both reflectance and insertion loss."
+      }
+    },
+    {
+      "id": "macrobend",
+      "name": "Macrobend",
+      "category": "non-reflective",
+      "traceAppearance": "Step down (loss) with no spike. Looks identical to a fusion splice on the trace but appears at an unexpected location — not at a documented splice point.",
+      "commonCauses": [
+        "Cable bent too tightly around a corner, ring, or obstacle",
+        "Fiber kinked in a splice closure",
+        "Cable pulled over a sharp edge",
+        "Excess slack loop coiled too tightly"
+      ],
+      "fieldNotes": "Location on trace tells you where to look physically. If a non-reflective loss event appears between documented splice points, suspect a macrobend. Check minimum bend radius for the cable type. In enclosures, check slack loops — they are a common source of macrobend loss.",
+      "nerdStuff": {
+        "title": "Why Bends Cause Loss",
+        "explanation": "In a bend, the outer edge of the fiber core requires light to travel faster than the speed of light in that medium to stay in the mode. Since it cannot, the light radiates out of the core into the cladding — and is lost. Standard G.652.D fiber has a minimum bend radius of approximately 30mm. G.657 bend-insensitive fiber tolerates radii down to 5–10mm depending on subcategory."
+      }
+    },
+    {
+      "id": "fiber-break-reflective",
+      "name": "Fiber Break (Clean / Reflective)",
+      "category": "reflective",
+      "traceAppearance": "Very large spike — often saturated (flat top) — followed by the trace dropping to the noise floor. Looks like an end-of-fiber but at the wrong distance.",
+      "commonCauses": [
+        "Clean cleave or cut",
+        "Tensile break with a flat end face",
+        "Rodent damage with a clean bite"
+      ],
+      "fieldNotes": "CRITICAL: Always OTDR from both ends. If one direction shows 75m and the other shows 62m, there is a break — neither reading is the true end. The break is located at the distance shown from the nearest launch end. The large spike is a strong Fresnel reflection from glass-to-air at the break point.",
+      "warningFlag": "A large reflective event is NOT always the end of fiber. Always test both directions to confirm."
+    },
+    {
+      "id": "fiber-break-non-reflective",
+      "name": "Fiber Break (Crush / Non-Reflective)",
+      "category": "non-reflective",
+      "traceAppearance": "Trace drops to noise floor suddenly with no spike. No reflection visible. Can be mistaken for a very high-loss event.",
+      "commonCauses": [
+        "Fiber shattered or crushed (vehicle over conduit, backhoe damage)",
+        "Fiber submerged / water intrusion causing optical scattering",
+        "Severe kink or crush point"
+      ],
+      "fieldNotes": "No spike means no clean end face to reflect from. The break location is still detectable as the point where the trace hits the noise floor. More difficult to pinpoint precisely than a reflective break. Shattered fiber can scatter light in all directions — no usable reflection returns.",
+      "warningFlag": "No spike does NOT mean no break. A non-reflective break is just as complete a failure."
+    },
+    {
+      "id": "ghost-echo",
+      "name": "Ghost / Echo Event",
+      "category": "ghost",
+      "traceAppearance": "Appears as a second reflective peak at exactly 2x the distance of a real high-reflectance event. Has NO associated step down (no loss). Trace level before and after the ghost is identical.",
+      "commonCauses": [
+        "Light bouncing back and forth between two highly reflective events (usually two connectors on a short fiber)",
+        "Open connector on a short test fiber",
+        "Very high reflectance at launch combined with a short fiber under test"
+      ],
+      "fieldNotes": "Key identifier: A ghost has NO loss step. The trace level is the same before and after. Real events always have an associated loss. Ghosts are always at a distance that is a multiple of the distance to the actual high-reflectance event. They are easy to predict once you know the source.",
+      "nerdStuff": {
+        "title": "Ghost Prediction",
+        "formulas": [
+          {
+            "name": "Ghost Location",
+            "expression": "d_ghost = 2 × d_source",
+            "variables": [
+              { "symbol": "d_ghost", "meaning": "Distance where ghost appears" },
+              { "symbol": "d_source", "meaning": "Distance to the real high-reflectance event causing the ghost" }
+            ],
+            "example": "Connector at 500m with high reflectance → ghost appears at ~1000m"
+          }
+        ],
+        "explanation": "Light reflecting between two high-reflectance points (e.g., launch connector and a broken fiber end) makes a second round trip before reaching the OTDR detector. Since the OTDR plots by time, this double-distance trip appears as an event at 2x the actual distance. Multiple ghosts can appear at 3x, 4x, etc. for very high-reflectance sources."
+      }
+    },
+    {
+      "id": "end-of-fiber",
+      "name": "End of Fiber",
+      "category": "end-of-fiber",
+      "traceAppearance": "Large reflective spike (Fresnel reflection from the polished end face) followed by the trace dropping to the noise floor. This is the expected termination of any fiber link.",
+      "commonCauses": [
+        "Polished connector end face",
+        "Cleaved but unterminated fiber end",
+        "Far-end of the link under test"
+      ],
+      "fieldNotes": "Visually identical to a reflective fiber break. The ONLY way to confirm it is the true end — not a break — is to test from both directions and verify the total length matches your cable records. If lengths disagree, there is a break.",
+      "nerdStuff": {
+        "title": "End Reflection vs. Break Reflection",
+        "explanation": "Both a polished connector end and a clean fiber break present a glass-to-air interface that produces a strong Fresnel reflection (~-14 dB for a perpendicular face). The OTDR cannot distinguish between the two from appearance alone. Distance verification from both ends is the only reliable method. A receive cable at the far end can eliminate this ambiguity during construction testing."
+      }
+    },
+    {
+      "id": "apparent-gain",
+      "name": "Apparent Gain (False Gainer)",
+      "category": "non-reflective",
+      "traceAppearance": "The trace steps UP at a splice point — as if there is an amplifier in the cable. No spike. This is NOT a real gain in optical power.",
+      "commonCauses": [
+        "Splice between two fibers with significantly different MFD values (e.g., G.652.D to G.657)",
+        "Splice between fibers from different manufacturers with different backscatter coefficients",
+        "Splice between G.652 and G.655 (NZDSF) fiber"
+      ],
+      "fieldNotes": "This confuses newer techs and even experienced splicers. The splice is almost always fine. Test bidirectionally and average. If the bidirectional average is within spec, the splice passes. Do NOT re-splice based on a unidirectional gainer alone.",
+      "warningFlag": "A gainer does not mean a bad splice. Always bidirectional test before re-splicing.",
+      "nerdStuff": {
+        "title": "Why Gainers Occur — MFD Mismatch",
+        "formulas": [
+          {
+            "name": "True Splice Loss",
+            "expression": "Loss_true = (A1 + A2) / 2",
+            "variables": [
+              { "symbol": "A1", "meaning": "Measured loss from direction 1 (may be negative — gainer)" },
+              { "symbol": "A2", "meaning": "Measured loss from direction 2 (typically exaggerated loss)" }
+            ],
+            "example": "A1 = -0.10 dB (gainer), A2 = 0.30 dB → True loss = (-0.10 + 0.30) / 2 = 0.10 dB — within spec"
+          }
+        ],
+        "explanation": "When testing from the direction of the lower-MFD fiber toward the higher-MFD fiber, the OTDR encounters a larger backscatter volume after the splice. This makes the fiber after the splice appear to have higher signal — a 'gain'. The effect is purely a measurement artifact caused by different backscatter coefficients, not actual optical amplification. Per ANSI/TIA/EIA-455-8-2000, bidirectional averaging is required for accurate splice loss measurement."
+      }
+    }
+  ],
+
+  "traceSettings": {
+    "pulseWidthGuidance": [
+      {
+        "pulseWidthNs": 10,
+        "typicalRangeKm": "0–2 km",
+        "deadZoneImpact": "Shortest dead zone — best event resolution. ~1m pulse length in fiber.",
+        "useCase": "Short premises links, data centers, closely-spaced events"
+      },
+      {
+        "pulseWidthNs": 100,
+        "typicalRangeKm": "0–20 km",
+        "deadZoneImpact": "Short dead zone. Good balance for access network construction.",
+        "useCase": "FTTH/access network, feeder cable, short OSP runs"
+      },
+      {
+        "pulseWidthNs": 1000,
+        "typicalRangeKm": "0–80 km",
+        "deadZoneImpact": "Longer dead zone. Closely spaced events may merge.",
+        "useCase": "Metro and long-haul OSP, transport fiber"
+      },
+      {
+        "pulseWidthNs": 10000,
+        "typicalRangeKm": "0–200+ km",
+        "deadZoneImpact": "Very long dead zone. Only for distance / attenuation on long haul. Poor event resolution.",
+        "useCase": "Long-haul span characterization, trunk cable"
+      }
+    ],
+    "rangeSetting": {
+      "rule": "Set range to at least 2x the actual fiber length.",
+      "exampleNote": "Testing a 15 km span → set range to 30 km minimum. This ensures the end-of-fiber event is visible and prevents the OTDR from missing the far end."
+    },
+    "averagingTime": {
+      "shortSeconds": "3–15 seconds",
+      "shortUse": "Quick check, real-time trace, known good links",
+      "longSeconds": "30–180 seconds",
+      "longUse": "Noisy trace, long fiber, low SNR, final acceptance testing",
+      "exfoAutoNote": "EXFO Auto mode selects pulse width and averaging time automatically. Use it when fiber length or loss is unknown. Always verify settings match your actual fiber length before final documentation."
+    },
+    "iorTable": [
+      {
+        "fiberType": "G.652.D — Standard SMF (Corning SMF-28, SMF-28e, SMF-28 Ultra)",
+        "ituDesignation": "G.652.D",
+        "ior1310": 1.4677,
+        "ior1550": 1.4682,
+        "ior1625": 1.4685,
+        "exfoProfileName": "SMF-28 / G.652.D",
+        "notes": "Most common OSP fiber. Industry default. Use this if fiber type is unknown and unconfirmed."
+      },
+      {
+        "fiberType": "G.657.A1 — Bend Insensitive SMF (Corning SMF-28 Ultra, drop cable)",
+        "ituDesignation": "G.657.A1",
+        "ior1310": 1.4676,
+        "ior1550": 1.4681,
+        "ior1625": 1.4684,
+        "exfoProfileName": "G.657.A1",
+        "notes": "Compatible with G.652.D splice-wise but different MFD. Will cause bidirectional gainer artifact at splice points with G.652.D. Very common in newer OSP construction and FTTH drop cable."
+      },
+      {
+        "fiberType": "G.657.A2 — Bend Insensitive SMF (tighter bend radius than A1)",
+        "ituDesignation": "G.657.A2",
+        "ior1310": 1.4676,
+        "ior1550": 1.4681,
+        "exfoProfileName": "G.657.A2",
+        "notes": "7.5mm minimum bend radius. Used in FTTH drop applications, MDU wiring."
+      },
+      {
+        "fiberType": "G.655 — NZDSF (Non-Zero Dispersion Shifted, e.g. Corning LEAF)",
+        "ituDesignation": "G.655",
+        "ior1310": 1.4710,
+        "ior1550": 1.4700,
+        "exfoProfileName": "G.655 / LEAF",
+        "notes": "Long-haul and submarine. Significantly different IOR from G.652. Will produce large gainer artifacts when spliced to standard SMF. Rare in access/distribution OSP."
+      },
+      {
+        "fiberType": "OM3 — Laser-Optimized 50/125µm Multimode",
+        "ituDesignation": "G.651.1 / OM3",
+        "ior1310": 1.4820,
+        "ior1550": 1.4800,
+        "exfoProfileName": "OM3 50/125",
+        "notes": "Multimode. Different IOR than SMF. Never test with SMF OTDR module — use MM module."
+      },
+      {
+        "fiberType": "OM4 — Laser-Optimized 50/125µm Multimode",
+        "ituDesignation": "G.651.1 / OM4",
+        "ior1310": 1.4820,
+        "ior1550": 1.4800,
+        "exfoProfileName": "OM4 50/125",
+        "notes": "Same IOR as OM3 in most units. Confirm with manufacturer datasheet for precision work."
+      },
+      {
+        "fiberType": "OM1 — Legacy 62.5/125µm Multimode",
+        "ituDesignation": "G.651 / OM1",
+        "ior1310": 1.4960,
+        "ior1550": 1.4920,
+        "exfoProfileName": "OM1 62.5/125",
+        "notes": "Legacy. Higher IOR than 50/125 MMF. Mostly found in older premises networks."
+      }
+    ],
+    "wavelengthGuide": [
+      {
+        "wavelengthNm": 1310,
+        "name": "Second Window / O-Band",
+        "primaryUse": "Standard OSP construction and acceptance testing. Default for most field work.",
+        "reveals": [
+          "Splice loss",
+          "Connector loss",
+          "Macrobend loss",
+          "Fiber attenuation",
+          "Break location"
+        ],
+        "limitations": [
+          "Higher attenuation than 1550nm (≈0.35 dB/km vs 0.20 dB/km for G.652.D)",
+          "Less sensitive to macrobend loss than 1550nm"
+        ],
+        "liveTrafficSafe": false,
+        "notes": "Zero dispersion wavelength for G.652 fiber. Best for construction testing and splice verification. Lower loss than 1310nm only at 1550nm — but 1310nm is the standard for most OSP acceptance specs.",
+        "nerdStuff": {
+          "title": "Why 1310nm is the OSP Standard",
+          "explanation": "G.652 fiber has its zero-dispersion wavelength at 1310nm. This makes it the optimal transmission window for undispersed signals over access and metro distances. Although 1550nm has lower attenuation, 1310nm remains the baseline for construction acceptance because most installed equipment operates in this band and splice specs are typically defined at 1310nm."
+        }
+      },
+      {
+        "wavelengthNm": 1550,
+        "name": "Third Window / C-Band",
+        "primaryUse": "Long-haul testing, sensitivity-critical links, macrobend detection.",
+        "reveals": [
+          "Macrobends (more sensitive than 1310nm)",
+          "Low-level attenuation anomalies",
+          "Long-span characterization",
+          "DWDM / EDFA amplified system verification"
+        ],
+        "limitations": [
+          "Less sensitive to connector reflectance than 1310nm on some units",
+          "Not always required for access network acceptance"
+        ],
+        "liveTrafficSafe": false,
+        "notes": "Lowest attenuation window for standard SMF (≈0.20 dB/km for G.652.D). Required for long-haul and DWDM systems. Better at revealing macrobends than 1310nm because the evanescent field extends further into the cladding.",
+        "nerdStuff": {
+          "title": "Why 1550nm Detects Bends Better",
+          "explanation": "At longer wavelengths, the mode field in a single-mode fiber extends further into the cladding (larger evanescent field). This makes the guided mode more sensitive to perturbations like bends. At a macrobend, the outer portion of the mode field cannot maintain the required phase velocity and radiates out of the fiber. This effect is stronger at 1550nm than at 1310nm, making 1550nm the preferred wavelength for detecting marginal bend losses."
+        }
+      },
+      {
+        "wavelengthNm": 1625,
+        "name": "L-Band / Out-of-Service Band",
+        "primaryUse": "Live fiber testing — bend and fault detection on in-service fiber without disrupting traffic.",
+        "reveals": [
+          "Macrobends (most sensitive wavelength for bend detection)",
+          "Cable damage on live fiber",
+          "Fault location without service interruption"
+        ],
+        "limitations": [
+          "Not all OTDRs include 1625nm module",
+          "Cannot replace 1310/1550nm for full characterization",
+          "Some systems use L-band for traffic — verify before testing"
+        ],
+        "liveTrafficSafe": true,
+        "notes": "1625nm falls outside the C-band (1530–1565nm) and L-band traffic window (1565–1625nm on most deployed systems). Allows OTDR testing on live fiber without disrupting active traffic. Always confirm the specific system's wavelength plan before assuming 1625nm is safe on a given fiber.",
+        "nerdStuff": {
+          "title": "Why 1625nm Doesn't Disrupt Traffic",
+          "explanation": "Standard DWDM and CWDM systems use wavelengths in the O, E, S, C, and L bands (roughly 1260–1625nm). The 1625nm OTDR test wavelength is above the highest C/L band traffic channels in most deployed systems. The optical filters at amplifiers and receivers reject out-of-band light, so the OTDR signal passes through the fiber plant without coupling into the traffic path. This enables monitoring and troubleshooting of live fiber spans — critical for maintenance without service disruption."
+        }
+      }
+    ]
+  },
+
+  "deadZones": [
+    {
+      "type": "event",
+      "abbreviation": "EDZ",
+      "definition": "The minimum distance after a Fresnel reflection event where the OTDR can detect the presence of another reflective event.",
+      "telcordiaDefinition": "Distance between two cursors set 1.5 dB below a reflective peak.",
+      "typicalValueSM": "1–5 meters (at shortest pulse width, single-mode)",
+      "typicalValueMM": "0.2–2 meters (at shortest pulse width, multimode)",
+      "keyFact": "Two connectors closer than the EDZ will appear as a single event. Use a launch cable to push the first connector outside the dead zone.",
+      "nerdStuff": {
+        "title": "EDZ and ADZ Formulas",
+        "formulas": [
+          {
+            "name": "Approximate Dead Zone from Pulse Width",
+            "expression": "Dead Zone (m) ≈ (Pulse Width ns / 10) × 2",
+            "variables": [
+              { "symbol": "Pulse Width ns", "meaning": "OTDR pulse width in nanoseconds" }
+            ],
+            "example": "50 ns pulse → (50/10) × 2 = 10 m dead zone (EXFO simplified formula)"
+          },
+          {
+            "name": "Minimum Launch Cable Length (EXFO)",
+            "expression": "Min length (m) = (Pulse Width ns / 10) × 2, minimum 25m",
+            "variables": [
+              { "symbol": "Pulse Width ns", "meaning": "Selected pulse width in nanoseconds" }
+            ],
+            "example": "100 ns pulse → (100/10) × 2 = 20m → round up to minimum 25m"
+          }
+        ],
+        "explanation": "The OTDR detector is saturated by the strong Fresnel reflection at a connector or break. Recovery time of the photodetector determines the dead zone length. Dead zone is directly proportional to pulse width — shorter pulse = shorter dead zone but lower dynamic range. Manufacturers specify dead zones at the shortest available pulse width and a -45 dB reflection standard for single-mode (EXFO reference)."
+      }
+    },
+    {
+      "type": "attenuation",
+      "abbreviation": "ADZ",
+      "definition": "The minimum distance after a Fresnel reflection event where the OTDR can accurately measure the loss of a non-reflective event (such as a fusion splice).",
+      "telcordiaDefinition": "Distance from the rising edge of the reflective pulse to the point where the trace returns to within 0.5 dB of the normal backscatter slope.",
+      "typicalValueSM": "5–25 meters (at shortest pulse width, single-mode)",
+      "typicalValueMM": "2–10 meters (at shortest pulse width, multimode)",
+      "keyFact": "ADZ is always larger than EDZ. A fusion splice within the ADZ of a connector cannot be accurately measured — the connector loss dominates. Use a receive cable at the far end to measure the last connector accurately."
+    }
+  ],
+
+  "bidirectionalGuide": {
+    "whyRequired": "A single-direction OTDR measurement provides only an estimated splice loss — not a true measurement. When two fibers with different backscatter coefficients are spliced together (different MFD values, different manufacturers, different fiber types), the OTDR shows either exaggerated loss or an apparent gain (gainer) depending on which direction it is measured from. Neither reading alone is accurate.",
+    "whatIsGainer": "A gainer is when the OTDR trace steps upward at a splice point — appearing as though there is optical amplification at the splice. It is not real. It is caused by the OTDR encountering higher backscatter on the fiber after the splice (smaller MFD → larger backscatter). The effect is an optical illusion created by the OTDR's measurement method.",
+    "realWorldExample": "Splicing G.652.D standard SMF to G.657 bend-insensitive fiber is extremely common in modern OSP construction. From the G.652.D side, the splice may show 0.35 dB loss — a concern. From the G.657 side, it may show a gainer of -0.10 dB. Bidirectional average: (0.35 + (-0.10)) / 2 = 0.125 dB — well within spec. Without bidirectional testing, the tech may needlessly re-splice a perfectly good joint.",
+    "procedure": [
+      "Test the complete fiber span from End A. Record all event losses.",
+      "Test the complete fiber span from End B. Record all event losses.",
+      "For each splice: average the A-direction and B-direction loss values. True loss = (A + B) / 2.",
+      "Apply customer or project threshold to the averaged value — not the individual directional readings.",
+      "Document both traces and the averaged results per ANSI/TIA/EIA-455-8-2000."
+    ],
+    "standard": "ANSI/TIA/EIA-455-8-2000 (FOTP-61) — Measurement of Splice or Connector Loss and Reflectance Using an OTDR",
+    "nerdStuff": {
+      "title": "The Math Behind Bidirectional Averaging",
+      "formulas": [
+        {
+          "name": "Unidirectional OTDR Measured Loss",
+          "expression": "α_measured = α_actual + α_MFD_artifact",
+          "variables": [
+            { "symbol": "α_measured", "meaning": "What the OTDR displays (unidirectional)" },
+            { "symbol": "α_actual", "meaning": "True splice loss (what we want)" },
+            { "symbol": "α_MFD_artifact", "meaning": "Error from backscatter coefficient difference — cancels in average" }
+          ]
+        },
+        {
+          "name": "True Splice Loss",
+          "expression": "Loss_true = (A1 + A2) / 2",
+          "variables": [
+            { "symbol": "A1", "meaning": "Loss measured from direction 1 (A1 = α_actual + α_MFD_artifact)" },
+            { "symbol": "A2", "meaning": "Loss measured from direction 2 (A2 = α_actual - α_MFD_artifact)" }
+          ],
+          "example": "The MFD artifact term has opposite signs in each direction — it cancels exactly in the average, leaving only the true splice loss."
+        }
+      ],
+      "explanation": "The backscatter artifact (α_MFD) appears as a positive error in one direction and an equal negative error in the opposite direction. When averaged, the artifacts cancel and the true splice loss remains. This mathematical cancellation is exact in theory — in practice, MFD can vary along the fiber length, but the bidirectional average is still significantly more accurate than any unidirectional measurement."
+    }
+  },
+
+  "fileFormats": [
+    {
+      "extension": ".sor",
+      "fullName": "Standard OTDR Record",
+      "owner": "Bellcore / Telcordia",
+      "standard": "Bellcore SR-4731 / GR-196-CORE",
+      "isOpenStandard": true,
+      "compatibility": "Universal — readable by EXFO, VIAVI, Anritsu, AFL, and virtually all OTDR post-processing software (EXFO FastReporter, VIAVI Smart Access Anywhere, etc.)",
+      "notes": "The industry standard file format. Always export .sor files for documentation and deliverables — even if your OTDR natively saves a proprietary format. Most customers and carriers require .sor for records."
+    },
+    {
+      "extension": ".trc",
+      "fullName": "EXFO Trace File",
+      "owner": "EXFO",
+      "isOpenStandard": false,
+      "compatibility": "EXFO instruments and EXFO FastReporter software only. Not readable by VIAVI or Anritsu natively.",
+      "notes": "EXFO's native format. Stores additional metadata beyond .sor spec including iOLM link map data, element-level analysis, and extended diagnostics. Best for internal use and EXFO-to-EXFO transfer. Always also save as .sor for deliverables."
+    },
+    {
+      "extension": ".msr",
+      "fullName": "VIAVI Measurement Record",
+      "owner": "VIAVI Solutions",
+      "isOpenStandard": false,
+      "compatibility": "VIAVI instruments and VIAVI Smart Access Anywhere / StrataSync software only.",
+      "notes": "VIAVI's native format. Similar role to EXFO's .trc — retains proprietary analysis data. Export to .sor for interoperability."
+    },
+    {
+      "extension": ".xml / .pdf",
+      "fullName": "Report Export Formats",
+      "owner": "Manufacturer-specific",
+      "isOpenStandard": true,
+      "compatibility": "Varies by software. EXFO FastReporter generates PDF and CSV exports. Standard for customer deliverables.",
+      "notes": "PDF reports are the standard customer deliverable. XML is used for data interchange with OSS/BSS systems. Neither replaces .sor for trace archival."
+    }
+  ],
+
+  "terminologyCrossReference": [
+    {
+      "concept": "Automated results view (no trace reading required)",
+      "exfo": "iOLM (intelligent Optical Link Mapper)",
+      "viavi": "SmartLink Mapper / Event Map",
+      "anritsu": "Auto Analysis",
+      "afl": "AutoTrace",
+      "notes": "EXFO iOLM is the most feature-complete automated interpretation system — uses multipulse acquisition and advanced algorithms. All others provide simplified event maps from single-pulse traces."
+    },
+    {
+      "concept": "List of all detected events with loss and reflectance",
+      "exfo": "Event Table",
+      "viavi": "Event Table",
+      "anritsu": "Event Table",
+      "afl": "Event Table",
+      "notes": "Terminology is consistent across all major manufacturers for this view."
+    },
+    {
+      "concept": "Graphical trace view (power vs. distance)",
+      "exfo": "OTDR Trace / Trace View",
+      "viavi": "OTDR Trace",
+      "anritsu": "OTDR Trace",
+      "afl": "Trace View",
+      "notes": "Consistent terminology across manufacturers."
+    },
+    {
+      "concept": "Total link loss summary",
+      "exfo": "Total Loss / Link Loss",
+      "viavi": "Span Loss",
+      "anritsu": "Total Loss",
+      "afl": "Link Loss",
+      "notes": "VIAVI uses 'Span Loss' which can cause confusion — it means the same as total insertion loss for the fiber under test."
+    },
+    {
+      "concept": "Overall pass/fail result for the full link",
+      "exfo": "Global Pass/Fail (iOLM)",
+      "viavi": "Overall Result",
+      "anritsu": "Pass/Fail",
+      "afl": "Link Status",
+      "notes": "EXFO's iOLM provides element-level pass/fail per connector and splice, not just a single link result."
+    },
+    {
+      "concept": "Launch (reference) cable offset compensation",
+      "exfo": "Span Start / Launch Offset",
+      "viavi": "Launch Cable Compensation",
+      "anritsu": "Launch Fiber Offset",
+      "afl": "Launch Fiber Offset",
+      "notes": "Removes the launch cable from the distance measurement so the fiber under test starts at 0."
+    },
+    {
+      "concept": "Far-end receive cable offset",
+      "exfo": "Span End / Receive Offset",
+      "viavi": "Receive Cable Compensation",
+      "anritsu": "Receive Fiber Offset",
+      "afl": "Receive Fiber Offset",
+      "notes": "Removes the receive cable from the measurement. Allows accurate characterization of the final connector on the far end."
+    },
+    {
+      "concept": "Optical Return Loss for the full span",
+      "exfo": "ORL",
+      "viavi": "ORL",
+      "anritsu": "ORL",
+      "afl": "ORL",
+      "notes": "Terminology consistent. EXFO and VIAVI both measure ORL and reflectance simultaneously during OTDR acquisition on capable modules."
+    },
+    {
+      "concept": "Native OTDR file format",
+      "exfo": ".trc",
+      "viavi": ".msr",
+      "anritsu": ".sor (native) / .dat",
+      "afl": ".sor (native)",
+      "notes": "All manufacturers also export .sor for interoperability. .sor is the required format for most customer deliverables."
+    },
+    {
+      "concept": "Connector universal interface / adapter system",
+      "exfo": "EUI (EXFO Universal Interface)",
+      "viavi": "MPO / SC / LC direct adapters",
+      "anritsu": "MU connector universal system",
+      "afl": "Snap-in connector adapters",
+      "notes": "EXFO's EUI system is the most field-flexible — allows swapping connector types without tools. Important when testing mixed connector environments."
+    }
+  ],
+
+  "launchCableGuide": {
+    "purpose": "A launch cable (also called a launch fiber or launch cord) is a known-good length of fiber connected between the OTDR port and the fiber under test. It moves the first connector of the fiber under test outside the OTDR's dead zone so it can be accurately measured.",
+    "minimumLengthSM": "100–500 meters for single-mode (typical OSP use). 1000–2000m for long-haul testing.",
+    "minimumLengthMM": "300–500 meters for multimode.",
+    "longHaulMinimum": "Up to 4000 meters for very long-haul spans with large pulse widths.",
+    "exfoFormula": "For pulse widths of 100 ns and shorter: minimum 25 meters. For longer pulses: (Pulse Width ns ÷ 10) × 2 = minimum length in meters.",
+    "mustMatchFiberType": true,
+    "notes": "Launch cable MUST be the same fiber type as the fiber under test (same IOR, same mode — SM or MM). A receive cable at the far end serves the same purpose for the last connector. Without launch/receive cables, the first and last connectors cannot be accurately measured by the OTDR."
+  }
+}
