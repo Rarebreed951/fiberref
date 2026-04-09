@@ -1,0 +1,261 @@
+{
+  "lastUpdated": "2026-04-08",
+
+  "enclosureTypes": [
+    {
+      "id": "dome",
+      "name": "Dome Closure",
+      "commonAliases": ["Butt Closure", "Torpedo Closure", "Oval Closure", "Dome Splice Case"],
+      "mountingEnvironments": ["buried", "direct buried", "aerial", "underground vault", "pedestal"],
+      "spliceCapacityRange": "24–576 splices",
+      "maxFiberCountRange": "24–864 fibers",
+      "keyFeatures": [
+        "Cylindrical or dome-shaped body with removable end cap",
+        "Gel or mechanical (compression) cable port sealing",
+        "Multiple fiber entry ports (8–24 ports typical)",
+        "Re-enterable without special tooling in most models",
+        "Stackable splice trays — easy to add capacity within the same closure",
+        "Accepts both loose-tube and tight-buffer cable types"
+      ],
+      "fieldNotes": "The most common OSP splice closure type. Suited for all installation environments. Gel-sealed versions are preferred for direct buried and high-water-table locations. Mechanical-seal versions are cleaner for re-entry in vault and aerial work. Before ordering, size to cable count plus 20% spare tray capacity for future splices — undersized closures are a common field problem.",
+      "nerdStuff": {
+        "title": "Gel vs. Mechanical Sealing",
+        "formulas": [],
+        "explanation": "Gel-sealed domes use a petroleum-based gel that fills all air gaps and cable entry points. Gel provides excellent moisture protection over decades but complicates re-entry (messy, cold-weather gel hardens) and may require a gel-cleaning kit. Mechanical-seal domes use compression fittings and O-rings — clean re-entry and proper torque on all ports is required for a valid seal. In high-water-table and direct-buried applications, gel sealing is preferred. For aerial and vault installations where maintenance re-entry is expected, mechanical sealing is more practical."
+      }
+    },
+    {
+      "id": "inline-horizontal",
+      "name": "Inline / Horizontal Closure",
+      "commonAliases": ["Horizontal Splice Case", "In-Line Closure", "Pass-Through Closure"],
+      "mountingEnvironments": ["aerial", "lashed aerial", "strand-mount", "underground vault"],
+      "spliceCapacityRange": "24–288 splices",
+      "maxFiberCountRange": "24–432 fibers",
+      "keyFeatures": [
+        "Pass-through cable entry — the cable enters one end and exits the other without being cut",
+        "Clamshell or split-body design for quick tray access on a pole or strand",
+        "Strand mounting brackets or bail attachments for aerial lashing",
+        "Preserves cable strength member continuity through the closure",
+        "Horizontal splice tray orientation in most models"
+      ],
+      "fieldNotes": "Preferred for mid-span aerial applications where the cable continues through the closure. Only the needed fibers are broken out and spliced — the rest pass through untouched. Easier to open on a pole than a dome. Strand installation requires proper lashing hardware and load ratings — verify closure weight (full with trays and cable) against aerial span specifications."
+    },
+    {
+      "id": "wall-mount",
+      "name": "Wall-Mount / Building Entry Terminal",
+      "commonAliases": ["BET", "Building Entrance Terminal", "MDU Terminal", "Pedestal Terminal"],
+      "mountingEnvironments": ["building interior", "MDU common area", "building exterior wall", "pedestal"],
+      "spliceCapacityRange": "12–144 splices",
+      "maxFiberCountRange": "12–288 fibers",
+      "keyFeatures": [
+        "Fixed wall or backboard mounting",
+        "Indoor and weatherproof outdoor variants available",
+        "Often includes both splice tray slots and adapter panel (connector) positions",
+        "Accepts distribution cable on feeder side, drop cables on output side",
+        "MDU variants support FTTH drop cable slack storage"
+      ],
+      "fieldNotes": "Common at building entry points and MDU distribution heads. The indoor version provides organized cable management and port labeling. Outdoor weatherproof versions are IP-rated for exterior wall mounting. In MDU applications, locate the terminal in a lockable space — untrained residents will pull on fiber if it's accessible."
+    },
+    {
+      "id": "rack-mount",
+      "name": "Rack-Mount Splice / Patch Enclosure",
+      "commonAliases": ["Fiber Distribution Hub", "FDH", "Rack Fiber Tray", "Fiber Patch Panel"],
+      "mountingEnvironments": ["central office", "data center", "equipment room", "OSP cabinet"],
+      "spliceCapacityRange": "12–576 splices per unit (1U–4U)",
+      "maxFiberCountRange": "12–2304 fibers per rack unit",
+      "keyFeatures": [
+        "19-inch or 23-inch EIA rack compatible",
+        "Front-access trays in most designs — no need to pull the unit from the rack",
+        "Integrated cable routing with bend radius guides",
+        "Often combined with LC/SC/MPO adapter panel on the front face",
+        "High-density MPO/MTP modules available (72 or 144 fibers per 1U)"
+      ],
+      "fieldNotes": "Standard in central offices, equipment rooms, and data centers. The highest-density fiber termination option. Label every port before any fiber is terminated — in a 7-foot rack with 2000+ fibers, unlabeled ports will create permanent maintenance problems. Use patch cord management spools at every row."
+    },
+    {
+      "id": "fiber-distribution-hub",
+      "name": "Fiber Distribution Hub (FDH)",
+      "commonAliases": ["FDH", "FTTH Distribution Point", "PON Splitter Cabinet", "Distribution Closure"],
+      "mountingEnvironments": ["buried vault", "aerial strand-mount", "pedestal", "OSP cabinet"],
+      "spliceCapacityRange": "Up to 432 splices (varies by model)",
+      "maxFiberCountRange": "Up to 864 fibers",
+      "keyFeatures": [
+        "Integrated PON splitter tray slots (1:4 to 1:64 PLC splitters)",
+        "Feeder cable input on one side, distribution and drop cable outputs on the other",
+        "Weatherproof housing rated for direct buried, aerial, or vault installation",
+        "Integrated patch panel for drop cable connections",
+        "Lockable — security-critical since the FDH serves multiple customers"
+      ],
+      "fieldNotes": "The FTTH/GPON distribution point where feeder fiber is split to customer drops. Size the splitter count conservatively — it is expensive to retrofit additional split capacity later. Document every port assignment (which port goes to which address) at time of installation. PON splitter insertion loss (≈17 dB for 1:64) is the largest single loss element in the GPON link budget.",
+      "nerdStuff": {
+        "title": "Optical Splitter Insertion Loss",
+        "formulas": [
+          {
+            "name": "Splitter Loss (theoretical)",
+            "expression": "Loss_splitter (dB) = 10 × log10(N)",
+            "variables": [
+              { "symbol": "N", "meaning": "Split ratio — number of output ports" }
+            ],
+            "example": "1:32 splitter → 10 × log10(32) = 15.05 dB theoretical. Typical measured value: 16–17 dB including excess loss."
+          }
+        ],
+        "explanation": "Optical PLC splitters divide power equally across N output ports. Theoretical loss is 10×log(N). Actual measured loss is 1–2 dB higher due to excess loss in the planar lightwave circuit substrate. A 1:64 splitter has approximately 18 dB insertion loss — this single component consumes the majority of the GPON power budget (typically 28–32 dB total). Cable, splice, and connector losses must all fit within the remaining 10–14 dB margin."
+      }
+    }
+  ],
+
+  "brands": [
+    {
+      "id": "corning",
+      "manufacturer": "Corning Cable Systems",
+      "notableModels": [
+        {
+          "modelName": "FOSC-450 D",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 12,
+          "maxFibers": 216,
+          "environments": ["buried", "direct buried", "aerial", "underground vault"],
+          "notes": "The most commonly encountered dome closure in North American OSP. Accepts 450-series splice trays. Available in gel-sealed and mechanical-seal versions. Extremely widely stocked by OSP contractors."
+        },
+        {
+          "modelName": "FOSC-400 A/B",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 8,
+          "maxFibers": 96,
+          "environments": ["buried", "aerial", "direct buried"],
+          "notes": "Smaller dome for access network taps and distribution splice points. 400A is the original; 400B is the updated variant. Common on older installed plant."
+        },
+        {
+          "modelName": "CDB-600",
+          "enclosureTypeId": "rack-mount",
+          "maxSpliceTrays": 24,
+          "maxFibers": 576,
+          "environments": ["central office", "equipment room"],
+          "notes": "High-capacity central office distribution box. Modular tray system supports incremental population."
+        }
+      ],
+      "notes": "Corning products are the de facto standard in North American OSP. The 450-series ecosystem (closure, trays, hardware, splice sleeves) is the most commonly encountered system in field work. When in doubt about tray compatibility, verify the closure series before ordering replacement trays."
+    },
+    {
+      "id": "afl",
+      "manufacturer": "AFL (Fujikura)",
+      "notableModels": [
+        {
+          "modelName": "FIST-SC2B",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 6,
+          "maxFibers": 144,
+          "environments": ["buried", "direct buried", "aerial", "underground vault"],
+          "notes": "Very common dome closure specified by major US Tier 1 carriers. Mechanical seal design for clean re-entry. Compatible with standard AFL 12-splice trays."
+        },
+        {
+          "modelName": "FIST-GC2",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 12,
+          "maxFibers": 288,
+          "environments": ["buried", "direct buried", "underground vault"],
+          "notes": "Larger FIST series dome with gel seal. Preferred for direct buried and high-moisture vault environments. Requires gel-removal kit for re-entry."
+        }
+      ],
+      "notes": "AFL closures are specified by several major US carriers. The FIST series is well-regarded for field re-enterability and splice tray quality. AFL also manufactures fusion splicers (Fujikura-branded) — common to see AFL closures used alongside AFL splicers on the same carrier projects."
+    },
+    {
+      "id": "commscope",
+      "manufacturer": "CommScope",
+      "notableModels": [
+        {
+          "modelName": "ADP-1040",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 8,
+          "maxFibers": 192,
+          "environments": ["buried", "aerial", "underground vault"],
+          "notes": "Standard CommScope dome for distribution and feeder OSP. Used by carriers deploying CommScope end-to-end infrastructure."
+        },
+        {
+          "modelName": "LightPath Aerial",
+          "enclosureTypeId": "inline-horizontal",
+          "maxSpliceTrays": 6,
+          "maxFibers": 144,
+          "environments": ["aerial", "lashed aerial"],
+          "notes": "Inline aerial closure for mid-span splicing on lashed cable plant. Strand-mount hardware included."
+        }
+      ],
+      "notes": "CommScope is a major presence in FTTH, enterprise, and carrier OSP. Their product line spans closures, FDHs, and rack systems, making them common on projects where the customer wants a single-vendor infrastructure solution."
+    },
+    {
+      "id": "plp",
+      "manufacturer": "Preformed Line Products (PLP)",
+      "notableModels": [
+        {
+          "modelName": "Coyote Closure",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 8,
+          "maxFibers": 192,
+          "environments": ["aerial", "buried", "direct buried", "underground vault"],
+          "notes": "Widely used by Tier 1 and Tier 2 carriers across all installation environments. Known for robust sealing and straightforward field re-entry. One of the most common non-Corning domes encountered in North American OSP."
+        }
+      ],
+      "notes": "PLP is a significant North American OSP presence, particularly for aerial and direct-buried applications. Their hardware (strand clamps, cable lashers, anchors) is ubiquitous alongside fiber closures."
+    }
+  ],
+
+  "spliceTrays": [
+    {
+      "id": "12-splice-standard",
+      "name": "12-Splice Standard Tray",
+      "fusionCapacity": 12,
+      "ribbonCapable": false,
+      "compatibleManufacturers": ["Corning", "AFL", "CommScope", "Generic 450-series"],
+      "notes": "The universal OSP splice tray. Holds 12 fusion or mechanical splices in individual heat-shrink sleeve holders. Two trays stacked = 24 positions. Used in virtually all OSP dome and inline closures. The 450-series standard is the most widely compatible."
+    },
+    {
+      "id": "24-splice-standard",
+      "name": "24-Splice Standard Tray",
+      "fusionCapacity": 24,
+      "ribbonCapable": false,
+      "compatibleManufacturers": ["Corning", "AFL"],
+      "notes": "Higher-capacity tray for large-count closures. Less common than 12-splice on distribution plant. Used in feeder and backbone closures with 144F+ cable counts where tray real estate is limited."
+    },
+    {
+      "id": "ribbon-tray-12",
+      "name": "12-Ribbon Mass-Fusion Tray",
+      "fusionCapacity": 144,
+      "ribbonCapable": true,
+      "compatibleManufacturers": ["Corning", "AFL"],
+      "notes": "Designed for mass-fusion ribbon splicing. Holds 12 ribbon splices × 12 fibers each = 144 fibers per tray. Used in high-count OSP (144F, 288F, 432F cables). Requires a ribbon-capable mass-fusion splicer — a single-fiber splicer cannot splice ribbons. Dramatically faster than individual fusion splicing at high fiber counts."
+    }
+  ],
+
+  "selectionGuide": [
+    {
+      "scenario": "Direct buried mid-span splice on distribution cable (24F–144F)",
+      "recommendedTypeId": "dome",
+      "notes": "Dome with gel seal for maximum moisture protection. Size to cable fiber count plus 20% spare tray capacity. Mark closure location on as-built drawings — re-finding a buried closure without GPS coordinates is costly."
+    },
+    {
+      "scenario": "Aerial mid-span splice on lashed ADSS or figure-8 cable",
+      "recommendedTypeId": "inline-horizontal",
+      "notes": "Inline horizontal for cable continuity through the closure. Strand-mount hardware required — verify closure weight (loaded) against aerial span design. Protect splice closure from traffic damage at pole level if near roadway."
+    },
+    {
+      "scenario": "Underground vault splice on high-count feeder cable (288F+)",
+      "recommendedTypeId": "dome",
+      "notes": "Large-capacity dome (FOSC-450 or equivalent) with ribbon tray capability for mass-fusion efficiency. Mechanical seal for clean vault re-entry. Leave adequate slack coil inside the vault for future splicing."
+    },
+    {
+      "scenario": "FTTH distribution point / PON splitter location",
+      "recommendedTypeId": "fiber-distribution-hub",
+      "notes": "FDH with integrated splitter tray slots sized for target split ratio (1:32 or 1:64). Include 25% spare port capacity for new customer connects. Weatherproof rating appropriate for installation environment. Lockable enclosure required — security is critical."
+    },
+    {
+      "scenario": "Building entry terminal / MDU fiber head-end",
+      "recommendedTypeId": "wall-mount",
+      "notes": "Wall-mount terminal with splice and patch panel capability. Indoor weatherproof (IP-rated) version if in unconditioned space. Locate in a secured equipment room or locked closet when possible."
+    },
+    {
+      "scenario": "Central office or equipment room termination",
+      "recommendedTypeId": "rack-mount",
+      "notes": "Rack-mount for high-density termination. Use MPO/MTP modules for 72F or 144F per 1U. Label every port at installation — retrofitting labels on a populated rack is a multi-hour job."
+    }
+  ]
+}

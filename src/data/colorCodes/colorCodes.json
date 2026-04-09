@@ -1,0 +1,215 @@
+{
+  "standard": "TIA-598-C / EIA-598-D",
+  "lastUpdated": "2026-04-08",
+
+  "fiberSequence": [
+    { "position": 1,  "colorName": "Blue",   "colorHex": "#0070C0", "abbreviation": "BL" },
+    { "position": 2,  "colorName": "Orange", "colorHex": "#FF6600", "abbreviation": "OR" },
+    { "position": 3,  "colorName": "Green",  "colorHex": "#00B050", "abbreviation": "GR" },
+    { "position": 4,  "colorName": "Brown",  "colorHex": "#7B3F00", "abbreviation": "BR" },
+    { "position": 5,  "colorName": "Slate",  "colorHex": "#708090", "abbreviation": "SL" },
+    { "position": 6,  "colorName": "White",  "colorHex": "#FFFFFF", "abbreviation": "WH" },
+    { "position": 7,  "colorName": "Red",    "colorHex": "#FF0000", "abbreviation": "RD" },
+    { "position": 8,  "colorName": "Black",  "colorHex": "#000000", "abbreviation": "BK" },
+    { "position": 9,  "colorName": "Yellow", "colorHex": "#FFD700", "abbreviation": "YL" },
+    { "position": 10, "colorName": "Violet", "colorHex": "#8B00FF", "abbreviation": "VT" },
+    { "position": 11, "colorName": "Rose",   "colorHex": "#FF66CC", "abbreviation": "RS" },
+    { "position": 12, "colorName": "Aqua",   "colorHex": "#00FFFF", "abbreviation": "AQ" }
+  ],
+
+  "bufferTubes": [
+    { "tubeNumber": 1,  "colorName": "Blue",   "colorHex": "#0070C0", "abbreviation": "BL" },
+    { "tubeNumber": 2,  "colorName": "Orange", "colorHex": "#FF6600", "abbreviation": "OR" },
+    { "tubeNumber": 3,  "colorName": "Green",  "colorHex": "#00B050", "abbreviation": "GR" },
+    { "tubeNumber": 4,  "colorName": "Brown",  "colorHex": "#7B3F00", "abbreviation": "BR" },
+    { "tubeNumber": 5,  "colorName": "Slate",  "colorHex": "#708090", "abbreviation": "SL" },
+    { "tubeNumber": 6,  "colorName": "White",  "colorHex": "#FFFFFF", "abbreviation": "WH" },
+    { "tubeNumber": 7,  "colorName": "Red",    "colorHex": "#FF0000", "abbreviation": "RD" },
+    { "tubeNumber": 8,  "colorName": "Black",  "colorHex": "#000000", "abbreviation": "BK" },
+    { "tubeNumber": 9,  "colorName": "Yellow", "colorHex": "#FFD700", "abbreviation": "YL" },
+    { "tubeNumber": 10, "colorName": "Violet", "colorHex": "#8B00FF", "abbreviation": "VT" },
+    { "tubeNumber": 11, "colorName": "Rose",   "colorHex": "#FF66CC", "abbreviation": "RS" },
+    { "tubeNumber": 12, "colorName": "Aqua",   "colorHex": "#00FFFF", "abbreviation": "AQ" },
+    { "tubeNumber": 13, "colorName": "Blue",   "colorHex": "#0070C0", "abbreviation": "BL", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 14, "colorName": "Orange", "colorHex": "#FF6600", "abbreviation": "OR", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 15, "colorName": "Green",  "colorHex": "#00B050", "abbreviation": "GR", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 16, "colorName": "Brown",  "colorHex": "#7B3F00", "abbreviation": "BR", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 17, "colorName": "Slate",  "colorHex": "#708090", "abbreviation": "SL", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 18, "colorName": "White",  "colorHex": "#FFFFFF", "abbreviation": "WH", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 19, "colorName": "Red",    "colorHex": "#FF0000", "abbreviation": "RD", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 20, "colorName": "Black",  "colorHex": "#000000", "abbreviation": "BK", "tracerColor": "Yellow", "tracerHex": "#FFD700" },
+    { "tubeNumber": 21, "colorName": "Yellow", "colorHex": "#FFD700", "abbreviation": "YL", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 22, "colorName": "Violet", "colorHex": "#8B00FF", "abbreviation": "VT", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 23, "colorName": "Rose",   "colorHex": "#FF66CC", "abbreviation": "RS", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 24, "colorName": "Aqua",   "colorHex": "#00FFFF", "abbreviation": "AQ", "tracerColor": "Black", "tracerHex": "#000000" },
+    { "tubeNumber": 25, "colorName": "Blue",   "colorHex": "#0070C0", "abbreviation": "BL", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 26, "colorName": "Orange", "colorHex": "#FF6600", "abbreviation": "OR", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 27, "colorName": "Green",  "colorHex": "#00B050", "abbreviation": "GR", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 28, "colorName": "Brown",  "colorHex": "#7B3F00", "abbreviation": "BR", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 29, "colorName": "Slate",  "colorHex": "#708090", "abbreviation": "SL", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 30, "colorName": "White",  "colorHex": "#FFFFFF", "abbreviation": "WH", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 31, "colorName": "Red",    "colorHex": "#FF0000", "abbreviation": "RD", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 32, "colorName": "Black",  "colorHex": "#000000", "abbreviation": "BK", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 33, "colorName": "Yellow", "colorHex": "#FFD700", "abbreviation": "YL", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 34, "colorName": "Violet", "colorHex": "#8B00FF", "abbreviation": "VT", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 35, "colorName": "Rose",   "colorHex": "#FF66CC", "abbreviation": "RS", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 36, "colorName": "Aqua",   "colorHex": "#00FFFF", "abbreviation": "AQ", "tracerColor": "Orange", "tracerHex": "#FF6600" },
+    { "tubeNumber": 37, "colorName": "Blue",   "colorHex": "#0070C0", "abbreviation": "BL", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 38, "colorName": "Orange", "colorHex": "#FF6600", "abbreviation": "OR", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 39, "colorName": "Green",  "colorHex": "#00B050", "abbreviation": "GR", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 40, "colorName": "Brown",  "colorHex": "#7B3F00", "abbreviation": "BR", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 41, "colorName": "Slate",  "colorHex": "#708090", "abbreviation": "SL", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 42, "colorName": "White",  "colorHex": "#FFFFFF", "abbreviation": "WH", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 43, "colorName": "Red",    "colorHex": "#FF0000", "abbreviation": "RD", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 44, "colorName": "Black",  "colorHex": "#000000", "abbreviation": "BK", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 45, "colorName": "Yellow", "colorHex": "#FFD700", "abbreviation": "YL", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 46, "colorName": "Violet", "colorHex": "#8B00FF", "abbreviation": "VT", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 47, "colorName": "Rose",   "colorHex": "#FF66CC", "abbreviation": "RS", "tracerColor": "Green", "tracerHex": "#00B050" },
+    { "tubeNumber": 48, "colorName": "Aqua",   "colorHex": "#00FFFF", "abbreviation": "AQ", "tracerColor": "Green", "tracerHex": "#00B050" }
+  ],
+
+  "ribbons": [
+    { "ribbonNumber": 1,  "setNumber": 1, "colorName": "Blue",   "colorHex": "#0070C0", "abbreviation": "BL" },
+    { "ribbonNumber": 2,  "setNumber": 1, "colorName": "Orange", "colorHex": "#FF6600", "abbreviation": "OR" },
+    { "ribbonNumber": 3,  "setNumber": 1, "colorName": "Green",  "colorHex": "#00B050", "abbreviation": "GR" },
+    { "ribbonNumber": 4,  "setNumber": 1, "colorName": "Brown",  "colorHex": "#7B3F00", "abbreviation": "BR" },
+    { "ribbonNumber": 5,  "setNumber": 1, "colorName": "Slate",  "colorHex": "#708090", "abbreviation": "SL" },
+    { "ribbonNumber": 6,  "setNumber": 1, "colorName": "White",  "colorHex": "#FFFFFF", "abbreviation": "WH" },
+    { "ribbonNumber": 7,  "setNumber": 1, "colorName": "Red",    "colorHex": "#FF0000", "abbreviation": "RD" },
+    { "ribbonNumber": 8,  "setNumber": 1, "colorName": "Black",  "colorHex": "#000000", "abbreviation": "BK" },
+    { "ribbonNumber": 9,  "setNumber": 1, "colorName": "Yellow", "colorHex": "#FFD700", "abbreviation": "YL" },
+    { "ribbonNumber": 10, "setNumber": 1, "colorName": "Violet", "colorHex": "#8B00FF", "abbreviation": "VT" },
+    { "ribbonNumber": 11, "setNumber": 1, "colorName": "Rose",   "colorHex": "#FF66CC", "abbreviation": "RS" },
+    { "ribbonNumber": 12, "setNumber": 1, "colorName": "Aqua",   "colorHex": "#00FFFF", "abbreviation": "AQ" }
+  ],
+
+  "jacketColors": [
+    {
+      "id": "om1",
+      "fiberType": "OM1 — 62.5/125µm Multimode",
+      "jacketColor": "Orange",
+      "jacketHex": "#FF6600",
+      "notes": "Legacy. LED-optimized. Mostly found in older buildings. Not installed new.",
+      "isLegacy": true
+    },
+    {
+      "id": "om2",
+      "fiberType": "OM2 — 50/125µm Multimode",
+      "jacketColor": "Orange",
+      "jacketHex": "#FF6600",
+      "notes": "Legacy. LED-optimized. Distinguish from OM1 by printed label on jacket.",
+      "isLegacy": true
+    },
+    {
+      "id": "om3",
+      "fiberType": "OM3 — 50/125µm Laser-Optimized Multimode",
+      "jacketColor": "Aqua",
+      "jacketHex": "#00B6C1",
+      "notes": "VCSEL-optimized. Common in enterprise data centers. Supports 10G to 300m.",
+      "isLegacy": false
+    },
+    {
+      "id": "om4",
+      "fiberType": "OM4 — 50/125µm Laser-Optimized Multimode",
+      "jacketColor": "Aqua",
+      "jacketHex": "#00B6C1",
+      "altJacketColor": "Erika Violet",
+      "altJacketHex": "#B04EA0",
+      "notes": "Aqua or Erika Violet depending on manufacturer. Erika Violet is OM4-only — a reliable visual identifier when present. 10G to 400m. Standard starting point for modern installs.",
+      "isLegacy": false
+    },
+    {
+      "id": "om5",
+      "fiberType": "OM5 — 50/125µm Wideband Multimode",
+      "jacketColor": "Lime Green",
+      "jacketHex": "#7FFF00",
+      "notes": "SWDM-capable. Supports 100G via 4 wavelengths. Hyperscale data centers. Premium cost.",
+      "isLegacy": false
+    },
+    {
+      "id": "os1",
+      "fiberType": "OS1 — Single-Mode (Indoor/Tight-Buffered)",
+      "jacketColor": "Yellow",
+      "jacketHex": "#FFD700",
+      "notes": "Indoor single-mode. Higher attenuation spec than OS2. Distinguish from OS2 by printed label.",
+      "isLegacy": false
+    },
+    {
+      "id": "os2",
+      "fiberType": "OS2 — Single-Mode (Outdoor/Loose-Tube)",
+      "jacketColor": "Yellow",
+      "jacketHex": "#FFD700",
+      "notes": "OSP standard. Lower attenuation than OS1. Same jacket color — always verify by label. Outdoor cable jackets are black regardless.",
+      "isLegacy": false
+    },
+    {
+      "id": "pm",
+      "fiberType": "Polarization-Maintaining Single-Mode",
+      "jacketColor": "Blue",
+      "jacketHex": "#0070C0",
+      "notes": "Specialized. Used in sensing, coherent optics, research. Rare in telecom OSP.",
+      "isLegacy": false
+    },
+    {
+      "id": "outdoor",
+      "fiberType": "Any — Outdoor / OSP Cable",
+      "jacketColor": "Black",
+      "jacketHex": "#000000",
+      "notes": "All outdoor cables are black for UV protection regardless of fiber type. Fiber type identified by jacket print only.",
+      "isLegacy": false
+    }
+  ],
+
+  "connectorColors": [
+    {
+      "id": "upc-sm",
+      "polishType": "UPC",
+      "fiberCompatibility": ["OS1", "OS2"],
+      "bodyColor": "Blue",
+      "bodyHex": "#0070C0",
+      "bootColor": "Blue",
+      "bootHex": "#0070C0",
+      "notes": "Ultra Physical Contact. No angle. Reflected light directed back toward source. Most common SM connector in OSP."
+    },
+    {
+      "id": "apc-sm",
+      "polishType": "APC",
+      "fiberCompatibility": ["OS1", "OS2"],
+      "bodyColor": "Green",
+      "bodyHex": "#00B050",
+      "bootColor": "Green",
+      "bootHex": "#00B050",
+      "notes": "Angled Physical Contact. 8-degree angle. Better return loss. Required for CATV/RF overlay, GPON, high-sensitivity systems. NEVER mix with UPC — physical damage will result."
+    },
+    {
+      "id": "upc-mm-om1-om2",
+      "polishType": "UPC",
+      "fiberCompatibility": ["OM1", "OM2"],
+      "bodyColor": "Beige / Black",
+      "bodyHex": "#C8A882",
+      "bootColor": "Beige",
+      "bootHex": "#C8A882",
+      "notes": "Legacy multimode. Beige body is the traditional identifier for OM1/OM2."
+    },
+    {
+      "id": "upc-mm-om3-om4",
+      "polishType": "UPC",
+      "fiberCompatibility": ["OM3", "OM4"],
+      "bodyColor": "Aqua",
+      "bodyHex": "#00B6C1",
+      "bootColor": "Aqua",
+      "bootHex": "#00B6C1",
+      "notes": "Matches jacket color. High-speed multimode. Common in data centers."
+    },
+    {
+      "id": "upc-mm-om5",
+      "polishType": "UPC",
+      "fiberCompatibility": ["OM5"],
+      "bodyColor": "Lime Green",
+      "bodyHex": "#7FFF00",
+      "bootColor": "Lime Green",
+      "bootHex": "#7FFF00",
+      "notes": "Matches OM5 jacket. SWDM-capable. Hyperscale / future-ready installs."
+    }
+  ]
+}

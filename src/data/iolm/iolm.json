@@ -1,0 +1,241 @@
+{
+  "lastUpdated": "2026-04-08",
+  "primaryReference": "TIA-526-7A / IEC 61280-4-1",
+
+  "testMethods": [
+    {
+      "id": "method-a",
+      "name": "Method A — One Jumper Reference",
+      "standardRefs": ["TIA-526-7A", "IEC 61280-4-1 Method 1"],
+      "referenceSetupSteps": [
+        "Connect source to reference jumper 1 (launch cord).",
+        "Connect far end of reference jumper 1 directly to power meter.",
+        "Allow source to stabilize for at least 2 minutes.",
+        "Set power meter to 0.00 dB reference (or record P_ref in dBm).",
+        "Reference is set — do not disturb the source-side connection for the rest of the test session."
+      ],
+      "whatItMeasures": "Loss of the DUT fiber plus both end connector matings — the near-end mating (reference cord to DUT) and the far-end mating (DUT to meter).",
+      "includesNearEndConnector": true,
+      "includesFarEndConnector": true,
+      "primaryUseCase": "Standard OSP link and channel loss acceptance testing. The method most commonly specified by carriers for construction acceptance.",
+      "fieldNotes": "The most common method in OSP. Both end connectors are included in the measurement — this matches how carrier specs are typically written. Use a launch cord that matches the fiber type under test in IOR, mode, and connector type. Any movement of the source-end connector after the reference is set invalidates the reference — re-zero before continuing.",
+      "nerdStuff": {
+        "title": "What Method A Actually Measures",
+        "formulas": [
+          {
+            "name": "Method A Loss",
+            "expression": "Loss_A = IL_conn_near + IL_fiber + IL_conn_far",
+            "variables": [
+              { "symbol": "IL_conn_near", "meaning": "Insertion loss at near-end connector mating (reference cord to DUT)" },
+              { "symbol": "IL_fiber", "meaning": "Bulk fiber attenuation over cable length" },
+              { "symbol": "IL_conn_far", "meaning": "Insertion loss at far-end connector mating (DUT to meter)" }
+            ],
+            "example": "0.25 dB (near conn) + 1.10 dB (fiber) + 0.20 dB (far conn) = 1.55 dB — this is what the meter displays."
+          }
+        ],
+        "explanation": "The reference zeroes out only the reference jumper's own loss. When the DUT is inserted, both connector matings become part of the measured path. This gives a complete channel loss including connectors, which is what most acceptance specs require. The method is simple but sensitive to the quality of the reference cord — use a certified, inspected reference jumper."
+      }
+    },
+    {
+      "id": "method-b",
+      "name": "Method B — Two Jumper Reference",
+      "standardRefs": ["TIA-526-7A", "IEC 61280-4-1 Method 2"],
+      "referenceSetupSteps": [
+        "Connect source to reference jumper 1 (launch cord).",
+        "Mate reference jumper 1 to reference jumper 2 (receive cord) directly — no DUT.",
+        "Connect far end of reference jumper 2 to power meter.",
+        "Allow source to stabilize for at least 2 minutes.",
+        "Set power meter to 0.00 dB reference — the mated junction between the two cords is now calibrated out.",
+        "Disconnect the two reference jumpers at their mating point.",
+        "Connect DUT near-end connector to reference jumper 1. Connect DUT far-end connector to reference jumper 2.",
+        "Read power meter — displayed loss is the DUT including both end matings minus the calibrated reference junction."
+      ],
+      "whatItMeasures": "Loss of the DUT fiber plus both end connector matings, with the reference cord junction loss subtracted from the calibration. Reduces measurement sensitivity to reference cord quality.",
+      "includesNearEndConnector": true,
+      "includesFarEndConnector": true,
+      "primaryUseCase": "Premises cabling acceptance (TIA-568), situations where reference cord connector quality may skew Method A results, or when a customer specification explicitly requires Method B.",
+      "fieldNotes": "Common for premises (TIA-568) and structured cabling acceptance. The two-cord reference compensates for reference cord connector variability between technicians and test sessions. For OSP construction testing, Method A is more commonly specified — always verify with project documentation before selecting a method.",
+      "nerdStuff": {
+        "title": "Why Method B Compensates for Reference Cord Quality",
+        "formulas": [
+          {
+            "name": "Method B Loss",
+            "expression": "Loss_B = IL_conn_near + IL_fiber + IL_conn_far - IL_ref_junction",
+            "variables": [
+              { "symbol": "IL_ref_junction", "meaning": "Loss of the reference cord mated junction — subtracted because it was in the calibration path" }
+            ],
+            "example": "Reference junction = 0.10 dB. DUT connectors each 0.25 dB, fiber 1.10 dB. Loss_B = 0.25 + 1.10 + 0.25 - 0.10 = 1.50 dB vs Method A = 1.55 dB — the 0.05 dB difference is half the reference junction loss."
+          }
+        ],
+        "explanation": "Method B includes both reference cord connectors in the calibration path, not just the cord's fiber. This zeroes out not only the reference fiber loss but also one connector junction. Results are more consistent across different technicians using different reference cords. The trade-off: Method B requires a matched pair of reference cords and an additional connection step, adding setup time."
+      }
+    },
+    {
+      "id": "method-c",
+      "name": "Method C — Substitution (Fiber Only)",
+      "standardRefs": ["TIA-526-7A", "IEC 61280-4-1 Method 3"],
+      "referenceSetupSteps": [
+        "Connect source to reference jumper 1.",
+        "Mate reference jumper 1 to reference jumper 2.",
+        "Connect far end of reference jumper 2 to power meter.",
+        "Set power meter to 0.00 dB reference — the full reference path including both connector matings is now zeroed.",
+        "Without disturbing the source or meter connections, disconnect the DUT's near-end from reference jumper 1's far end.",
+        "Insert DUT into the path: reference jumper 1 — DUT near-end connector — DUT fiber — DUT far-end connector — reference jumper 2.",
+        "Read power meter — displayed loss is the DUT fiber bulk attenuation only."
+      ],
+      "whatItMeasures": "Fiber bulk attenuation only. End connector losses are excluded because those connector matings were part of the calibration reference.",
+      "includesNearEndConnector": false,
+      "includesFarEndConnector": false,
+      "primaryUseCase": "Isolating fiber attenuation from connector contribution. Used for troubleshooting high-loss links, verifying cable plant attenuation separate from connectors, or when the specification requires fiber-only loss.",
+      "fieldNotes": "Rarely specified for OSP acceptance testing — most carrier specs require connector loss to be included. Method C is most useful for diagnostics: if Method A fails but Method C passes, the excess loss is in the connectors. Flag this finding and inspect/clean connectors before re-testing with Method A.",
+      "nerdStuff": {
+        "title": "Using Method C for Diagnostics",
+        "formulas": [
+          {
+            "name": "Connector Loss Estimate",
+            "expression": "IL_connectors_total = Loss_A - Loss_C",
+            "variables": [
+              { "symbol": "Loss_A", "meaning": "Method A result (fiber + both connectors)" },
+              { "symbol": "Loss_C", "meaning": "Method C result (fiber only)" }
+            ],
+            "example": "Method A reads 2.10 dB. Method C reads 1.35 dB. Total connector loss = 2.10 - 1.35 = 0.75 dB — 0.375 dB average per end, which is borderline (≤0.75 dB allowed). Inspect and clean before re-testing."
+          }
+        ],
+        "explanation": "The difference between Method A and Method C results is the sum of both end connector losses. This diagnostic split is invaluable for identifying whether a failing link is a fiber problem (high Method C result) or a connector problem (large difference between Method A and Method C). Most failing OSP links are connector problems, not fiber problems."
+      }
+    }
+  ],
+
+  "lossThresholds": [
+    {
+      "component": "Fusion Splice",
+      "maxLossdB": 0.3,
+      "typicalGooddB": 0.05,
+      "standard": "ITU-T G.671 / Telcordia GR-326",
+      "notes": "0.3 dB is the ITU maximum. Most carrier OSP acceptance specs require ≤0.1 dB per splice. A well-made fusion splice on matched fiber should read 0.02–0.10 dB. Values above 0.15 dB warrant investigation — check for contamination, bad cleave, or MFD mismatch. Always use bidirectional average for evaluation."
+    },
+    {
+      "component": "Mechanical Splice",
+      "maxLossdB": 0.5,
+      "typicalGooddB": 0.25,
+      "standard": "TIA-568.3-D",
+      "notes": "Higher loss than fusion and degradable over time. Index-matching gel dries out with temperature cycling and UV exposure, increasing loss progressively. Document all mechanical splices — they are maintenance liabilities. Not recommended for new permanent OSP installation."
+    },
+    {
+      "component": "Connector (mated pair)",
+      "maxLossdB": 0.75,
+      "typicalGooddB": 0.3,
+      "standard": "TIA-568.3-D / IEC 61753-1",
+      "notes": "0.75 dB is the absolute maximum per mated connector pair per IEC/TIA. Carrier OSP specs often require ≤0.5 dB. A properly cleaned, undamaged connector pair should read 0.1–0.3 dB. Any reading above 0.5 dB: inspect, clean, and re-test before accepting. APC connectors typically perform better than UPC on ORL but similar on insertion loss."
+    },
+    {
+      "component": "Fiber attenuation — G.652.D at 1310 nm",
+      "maxLossdB": 0.4,
+      "typicalGooddB": 0.33,
+      "standard": "ITU-T G.652",
+      "notes": "Per km. Typical deployed SMF-28 runs 0.33–0.35 dB/km at 1310 nm. Values above 0.4 dB/km suggest water peak contamination, physical damage, or incorrect fiber type. Always divide total fiber span loss by length to get per-km attenuation for comparison."
+    },
+    {
+      "component": "Fiber attenuation — G.652.D at 1550 nm",
+      "maxLossdB": 0.3,
+      "typicalGooddB": 0.20,
+      "standard": "ITU-T G.652",
+      "notes": "Per km. Typical deployed SMF-28 runs 0.18–0.20 dB/km at 1550 nm. 1550 nm attenuation being higher than 1310 nm on the same span is a red flag — suspect macrobend, water intrusion, or damaged cable. Normal physics says 1550 nm loss should be lower than 1310 nm on G.652.D."
+    }
+  ],
+
+  "orlRequirements": [
+    {
+      "applicationContext": "Standard OSP / general carrier plant",
+      "minORLdB": 27,
+      "notes": "Per Telcordia GR-326 and general carrier practice. ORL below 27 dB on a standard OSP link indicates a high-reflectance event — likely an APC/UPC mismatch, open connector end-face, or very close reflective break. Investigate before accepting the link."
+    },
+    {
+      "applicationContext": "GPON / xPON (at OLT port)",
+      "minORLdB": 32,
+      "notes": "PON systems are more sensitive to reflections due to burst-mode operation and tight receiver margins. Check OLT vendor datasheet for the exact requirement — some specify ≥32 dB, others ≥35 dB. ORL violations can cause intermittent errors and receiver desensitization across all ONTs on the PON."
+    },
+    {
+      "applicationContext": "CATV / RF Overlay (UPC plant)",
+      "minORLdB": 55,
+      "notes": "Analog RF signals in the 50–1000 MHz range are severely impacted by reflections that create composite second-order and third-order beat interference. UPC connectors achieve approximately -55 dB ORL when clean and undamaged. Degraded UPC connectors are a primary cause of CATV signal quality complaints."
+    },
+    {
+      "applicationContext": "CATV / RF Overlay (APC plant — required)",
+      "minORLdB": 65,
+      "notes": "APC connectors are required for all RF overlay applications. APC achieves -65 dB ORL or better, providing the margin needed for analog CATV. Never connect UPC to APC in a CATV plant — the mismatch reduces ORL to approximately -26 dB at the mismatch point and causes physical connector damage."
+    },
+    {
+      "applicationContext": "DWDM / amplified long-haul",
+      "minORLdB": 27,
+      "notes": "Minimum per DWDM segment. EDFA amplifiers can experience optical feedback instability when ORL is poor. Some DWDM system vendors specify ≥32 dB at amplifier input ports. Always check the system vendor specification — do not assume the OSP standard is sufficient for DWDM applications."
+    }
+  ],
+
+  "wavelengthTestRequirements": [
+    {
+      "wavelengthNm": 1310,
+      "fiberCategory": "SMF",
+      "requiredFor": [
+        "All SMF OSP acceptance testing",
+        "Access and distribution network verification",
+        "Premises SMF cabling acceptance"
+      ],
+      "standard": "TIA-526-7A / Telcordia GR-326",
+      "notes": "Mandatory for all SMF OSP acceptance. The default wavelength for most carrier construction specs. G.652.D has its zero-dispersion point near 1310 nm — this is the primary operating window for access and metro equipment. Always test 1310 nm before accepting any OSP fiber."
+    },
+    {
+      "wavelengthNm": 1550,
+      "fiberCategory": "SMF",
+      "requiredFor": [
+        "Long-haul span characterization",
+        "DWDM system fiber verification",
+        "Macrobend detection (more sensitive than 1310 nm)",
+        "Carrier backbone OSP acceptance"
+      ],
+      "standard": "TIA-526-7A / Telcordia GR-326",
+      "notes": "Required alongside 1310 nm for backbone and long-haul OSP. If 1310 nm passes but 1550 nm fails, suspect marginal macrobend loss — the 1550 nm evanescent field extends further into cladding and is more sensitive to bends. Most carrier backbone specs require dual-wavelength testing."
+    },
+    {
+      "wavelengthNm": 1625,
+      "fiberCategory": "SMF",
+      "requiredFor": [
+        "Live fiber testing on in-service fiber (OTDR only — not standard IOLM)",
+        "Maintenance troubleshooting without service interruption"
+      ],
+      "standard": "ITU-T G.697",
+      "notes": "Used for OTDR testing on live, in-service fiber — not typically for IOLM (insertion loss) testing. Active fiber requires specialized test configurations. Always confirm the system's wavelength plan before testing at 1625 nm — some L-band DWDM systems use wavelengths in this range."
+    },
+    {
+      "wavelengthNm": 850,
+      "fiberCategory": "MMF",
+      "requiredFor": [
+        "All OM1/OM2/OM3/OM4/OM5 acceptance testing",
+        "Data center MMF cabling",
+        "Campus OM3/OM4 verification"
+      ],
+      "standard": "TIA-526-14B / IEC 61280-4-2",
+      "notes": "Primary test wavelength for all multimode fiber. VCSEL (vertical-cavity surface-emitting laser) source is required for OM3/OM4/OM5 testing — LED sources are not acceptable and will produce inaccurate results on laser-optimized fiber. Use the overfilled launch (OFL) condition per TIA-526-14B."
+    },
+    {
+      "wavelengthNm": 1300,
+      "fiberCategory": "MMF",
+      "requiredFor": [
+        "OM1/OM2 legacy testing",
+        "Enterprise and campus cabling where dual-wavelength is specified"
+      ],
+      "standard": "TIA-526-14B",
+      "notes": "Secondary MMF wavelength. Required alongside 850 nm for some enterprise specs and TIA-568-C structured cabling acceptance. Less commonly required for modern OM3/OM4/OM5 data center installations, which are predominantly 850 nm VCSEL systems."
+    }
+  ],
+
+  "fieldNotes": [
+    "Inspect and clean all connectors before testing. A single dirty connector can add 0.5–3 dB of false loss. Clean first, inspect under fiber scope, then test — never skip this step.",
+    "Allow the optical source to stabilize for at least 2 minutes before setting the reference. Thermal drift in the first minute can cause 0.3–0.5 dB of reference error.",
+    "Never re-zero the reference mid-session without re-cleaning and re-verifying the reference cord. A contaminated reference cord will cause every subsequent test to read incorrectly.",
+    "If a fiber fails IOLM, suspect connectors before the cable plant. 80% of high-loss readings in OSP are connector problems (dirt, damage, misalignment), not fiber problems.",
+    "Document which test method (A, B, or C) was used. A result taken with Method A cannot be directly compared to a spec written for Method B.",
+    "Bidirectional testing (test from both ends and average) gives more accurate splice loss than unidirectional. Required by TIA/EIA-455-8 for splice loss measurements.",
+    "Calculate the expected loss budget before testing each link so you know what a passing result looks like: (fiber length × attenuation/km) + (connector count × 0.5 dB) + (splice count × 0.1 dB)."
+  ]
+}

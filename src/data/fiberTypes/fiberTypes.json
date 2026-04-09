@@ -1,0 +1,224 @@
+{
+  "lastUpdated": "2026-04-08",
+
+  "fiberTypes": [
+    {
+      "id": "g652d",
+      "ituDesignation": "G.652.D",
+      "tiaDesignation": "OS2",
+      "commonNames": ["Standard SMF", "SMF-28", "SMF-28e", "SMF-28 Ultra", "G.652D"],
+      "category": "single-mode",
+      "coreDiameterMicron": 9.2,
+      "claddingDiameterMicron": 125,
+      "mfdAt1310nmMicron": 9.2,
+      "mfdAt1550nmMicron": 10.4,
+      "attenuationAt1310nmMax": 0.4,
+      "attenuationAt1550nmMax": 0.3,
+      "minBendRadiusMm": 30,
+      "activelyInstalled": true,
+      "primaryUseCase": "The universal OSP standard. Used in access, distribution, feeder, metro, and long-haul OSP. The default fiber type for all new single-mode installations unless a specific application requires otherwise.",
+      "compatibilityNotes": "The reference standard — all other SMF types are compared to G.652.D. Fusion splicing to G.657.A1/A2 produces minor gainer artifacts on OTDR (bidirectional averaging required for accurate loss). Splicing to G.657.B2/B3 or G.655 produces significant MFD mismatch artifacts. IOR: 1.4677 @ 1310 nm, 1.4682 @ 1550 nm.",
+      "nerdStuff": {
+        "title": "Why G.652.D is the Universal Standard",
+        "formulas": [],
+        "explanation": "G.652.D represents the fourth (D) revision of the G.652 standard, adding specifications for low water peak (LWP) attenuation at the 1383 nm OH-absorption band. Prior revisions (A, B, C) had a significant water peak at 1383 nm that made the E-band unusable. G.652.D eliminates this restriction, enabling 18 ITU CWDM channels and full WDM use across the O, E, S, C, and L bands. Nearly all SMF-28 fiber manufactured since the early 2000s meets G.652.D. If you encounter a G.652.A or B spec on old plant documentation, assume the fiber has a water peak."
+      }
+    },
+    {
+      "id": "g657a1",
+      "ituDesignation": "G.657.A1",
+      "commonNames": ["Bend Insensitive SMF", "G.657A1", "BI-SMF"],
+      "category": "single-mode",
+      "coreDiameterMicron": 9.0,
+      "claddingDiameterMicron": 125,
+      "mfdAt1310nmMicron": 9.0,
+      "mfdAt1550nmMicron": 9.7,
+      "attenuationAt1310nmMax": 0.4,
+      "attenuationAt1550nmMax": 0.3,
+      "minBendRadiusMm": 10,
+      "activelyInstalled": true,
+      "primaryUseCase": "FTTH drop cables, building distribution wiring, any installation with tight routing where 30 mm bend radius cannot be maintained. Backward-compatible with G.652.D for splicing and connectivity.",
+      "compatibilityNotes": "Fully compatible with G.652.D connectors and splices. The MFD is 0.2 µm smaller than G.652.D nominal, which can cause a gainer artifact on OTDR at splice points. Bidirectional averaging is required for accurate splice loss measurement. Can be connected and spliced anywhere G.652.D is used without engineering review."
+    },
+    {
+      "id": "g657a2",
+      "ituDesignation": "G.657.A2",
+      "commonNames": ["Tight Bend SMF", "G.657A2"],
+      "category": "single-mode",
+      "coreDiameterMicron": 9.0,
+      "claddingDiameterMicron": 125,
+      "mfdAt1310nmMicron": 9.0,
+      "mfdAt1550nmMicron": 9.7,
+      "attenuationAt1310nmMax": 0.4,
+      "attenuationAt1550nmMax": 0.3,
+      "minBendRadiusMm": 7.5,
+      "activelyInstalled": true,
+      "primaryUseCase": "FTTH indoor drop wiring, MDU floor-level distribution, aerial figure-8 drop cables, micro-duct installations — any application requiring 7.5 mm minimum bend radius.",
+      "compatibilityNotes": "G.652.D compatible for splicing and connectivity. Same MFD as G.657.A1 — same OTDR gainer artifact consideration applies. More bend-tolerant than A1 but not as extreme as B-series. No engineering review required for standard OSP applications."
+    },
+    {
+      "id": "g657b2",
+      "ituDesignation": "G.657.B2",
+      "commonNames": ["Extreme Bend SMF", "G.657B2", "Ultra BI-SMF"],
+      "category": "single-mode",
+      "coreDiameterMicron": 8.6,
+      "claddingDiameterMicron": 125,
+      "mfdAt1310nmMicron": 8.6,
+      "mfdAt1550nmMicron": 9.2,
+      "attenuationAt1310nmMax": 0.5,
+      "attenuationAt1550nmMax": 0.4,
+      "minBendRadiusMm": 5,
+      "activelyInstalled": true,
+      "primaryUseCase": "In-building FTTH distribution, MDU riser and apartment wiring, applications with 5 mm bend radius routing constraints.",
+      "compatibilityNotes": "NOT fully G.652.D compatible. Smaller MFD produces measurable splice loss (0.2–0.5 dB typical) at any junction with G.652.D or G.657.A-series. Use only where bend performance justifies the compatibility penalty. Requires engineering review before substituting into standard OSP. Higher attenuation spec than A-series.",
+      "nerdStuff": {
+        "title": "Why B-Series Fiber Is Not Fully G.652.D Compatible",
+        "formulas": [
+          {
+            "name": "MFD Mismatch Splice Loss",
+            "expression": "IL_mfd (dB) ≈ -20 × log10(2 × w1 × w2 / (w1² + w2²))",
+            "variables": [
+              { "symbol": "w1", "meaning": "Mode field radius of fiber 1 (µm)" },
+              { "symbol": "w2", "meaning": "Mode field radius of fiber 2 (µm)" }
+            ],
+            "example": "G.652.D (MFD 9.2 µm) to G.657.B2 (MFD 8.6 µm): w1=4.6, w2=4.3 → IL ≈ 0.07 dB theoretical. Actual measured loss is higher due to additional alignment and waveguide coupling effects."
+          }
+        ],
+        "explanation": "The B-series fiber has a smaller core structure to achieve extreme bend performance. This reduces the mode field diameter to the point where it falls outside the G.652.D specification range, causing measurable coupling loss at the splice joint. The ITU 'B' designation specifically indicates a fiber that is NOT required to meet G.652.D compatibility. In an FTTH system, the G.657.B2 or B3 fiber is typically used only for the last 10–50 meters of in-building wiring where the bend constraint exists — the rest of the link uses G.657.A1 or G.652.D."
+      }
+    },
+    {
+      "id": "g657b3",
+      "ituDesignation": "G.657.B3",
+      "commonNames": ["Ultra Extreme Bend SMF", "G.657B3"],
+      "category": "single-mode",
+      "coreDiameterMicron": 8.0,
+      "claddingDiameterMicron": 125,
+      "mfdAt1310nmMicron": 8.0,
+      "mfdAt1550nmMicron": 8.6,
+      "attenuationAt1310nmMax": 0.5,
+      "attenuationAt1550nmMax": 0.4,
+      "minBendRadiusMm": 2.5,
+      "activelyInstalled": true,
+      "primaryUseCase": "Premium in-building FTTH routing, highly complex MDU in-unit wiring, micro-duct installations requiring the tightest possible routing.",
+      "compatibilityNotes": "Significant MFD mismatch with all G.652 and G.657.A-series fiber. High splice loss at any junction with standard OSP fiber. Requires careful link budget analysis before use. Not interchangeable with standard OSP fiber without engineering approval. Reserve for applications where no other fiber type can meet the routing constraint."
+    },
+    {
+      "id": "g655",
+      "ituDesignation": "G.655",
+      "commonNames": ["NZDSF", "Non-Zero Dispersion Shifted Fiber", "LEAF", "TrueWave", "MetroCor"],
+      "category": "single-mode",
+      "coreDiameterMicron": 9.0,
+      "claddingDiameterMicron": 125,
+      "mfdAt1310nmMicron": 9.5,
+      "mfdAt1550nmMicron": 10.8,
+      "attenuationAt1310nmMax": 0.5,
+      "attenuationAt1550nmMax": 0.35,
+      "minBendRadiusMm": 30,
+      "activelyInstalled": false,
+      "primaryUseCase": "Long-haul and transoceanic backbone DWDM transport where chromatic dispersion management in the C-band is critical. Found in legacy long-haul networks. Rarely specified for new installations.",
+      "compatibilityNotes": "Different IOR from G.652.D (≈1.4710 @ 1310 nm, ≈1.4700 @ 1550 nm). Large OTDR gainer artifact when spliced to G.652.D — always bidirectional test. Use the G.655 IOR profile in OTDR settings when testing this fiber type. Not interchangeable with G.652.D for IOR settings."
+    },
+    {
+      "id": "g654",
+      "ituDesignation": "G.654",
+      "commonNames": ["ULLAF", "Ultra Low Loss Fiber", "Pure Silica Core Fiber", "PSCF"],
+      "category": "single-mode",
+      "coreDiameterMicron": 10.5,
+      "claddingDiameterMicron": 125,
+      "mfdAt1310nmMicron": 11.0,
+      "mfdAt1550nmMicron": 12.0,
+      "attenuationAt1310nmMax": 0.4,
+      "attenuationAt1550nmMax": 0.17,
+      "minBendRadiusMm": 30,
+      "activelyInstalled": false,
+      "primaryUseCase": "Submarine cable, transoceanic routes, ultra-long terrestrial backbone where amplifier spacing maximization is critical. Extremely rare in access or metro OSP field work.",
+      "compatibilityNotes": "Large MFD — significant coupling loss when spliced to G.652.D. Requires specialized splicing parameters and careful alignment. The pure silica core provides lower Rayleigh scattering than germanium-doped G.652.D, yielding the lowest attenuation of any deployed fiber type. Extremely uncommon in field work outside of dedicated backbone and submarine projects.",
+      "nerdStuff": {
+        "title": "Why Pure Silica Core Has Lower Attenuation",
+        "formulas": [],
+        "explanation": "Standard G.652.D fiber has a germanium-doped silica core, which raises the refractive index above the undoped cladding. Germanium doping introduces additional Rayleigh scattering, which is the dominant loss mechanism at 1550 nm. G.654 uses a pure silica core (undoped) with a fluorine-doped lower-index cladding instead of a raised-index core. Eliminating germanium doping reduces Rayleigh scattering, lowering the theoretical minimum attenuation from ≈0.19 dB/km for G.652.D to ≈0.15 dB/km for G.654 — approaching the theoretical Rayleigh limit for silica."
+      }
+    },
+    {
+      "id": "om1",
+      "ituDesignation": "G.651",
+      "tiaDesignation": "OM1",
+      "commonNames": ["OM1", "62.5/125 Multimode", "Legacy Multimode"],
+      "category": "multimode",
+      "coreDiameterMicron": 62.5,
+      "claddingDiameterMicron": 125,
+      "na": 0.275,
+      "attenuationAt1310nmMax": 1.5,
+      "minBendRadiusMm": 25,
+      "activelyInstalled": false,
+      "primaryUseCase": "Legacy premises and campus cabling installed prior to approximately 2000. LED-source optimized. Found in older enterprise buildings. Not specified for any new installation.",
+      "compatibilityNotes": "Physically incompatible with 50/125 multimode — the different core size causes 2–8 dB loss at any 62.5/50 junction. Cannot be reliably mixed with OM2/OM3/OM4 for link performance. Must use dedicated OM1 test equipment and connectors. IOR ≈ 1.4960 @ 1310 nm — significantly different from OM3/OM4."
+    },
+    {
+      "id": "om2",
+      "ituDesignation": "G.651.1",
+      "tiaDesignation": "OM2",
+      "commonNames": ["OM2", "50/125 Multimode", "Legacy 50/125"],
+      "category": "multimode",
+      "coreDiameterMicron": 50,
+      "claddingDiameterMicron": 125,
+      "na": 0.200,
+      "attenuationAt1310nmMax": 1.5,
+      "minBendRadiusMm": 25,
+      "activelyInstalled": false,
+      "primaryUseCase": "Legacy enterprise and campus cabling. LED-optimized. Supports 1G to 500 m. Supports 10G only to 82 m — not practical for 10G applications. No longer specified for new installations.",
+      "compatibilityNotes": "Same 50 µm core diameter as OM3/OM4/OM5. Can be physically connected, but mixed-mode links run at OM2 performance limits. VCSEL laser sources used on OM3/OM4 equipment will overfill OM2, making bandwidth measurement unreliable and reducing effective reach."
+    },
+    {
+      "id": "om3",
+      "ituDesignation": "G.651.1",
+      "tiaDesignation": "OM3",
+      "commonNames": ["OM3", "Laser-Optimized 50/125", "LOMMF OM3"],
+      "category": "multimode",
+      "coreDiameterMicron": 50,
+      "claddingDiameterMicron": 125,
+      "na": 0.200,
+      "attenuationAt1310nmMax": 1.0,
+      "minBendRadiusMm": 25,
+      "activelyInstalled": true,
+      "primaryUseCase": "Data centers, enterprise campus, and storage networking. Supports 10G to 300 m, 40G to 100 m, 100G to 70 m. The minimum standard for modern high-bandwidth multimode installations.",
+      "compatibilityNotes": "Compatible with OM4 at OM3 performance limits. A mixed OM3/OM4 link runs at OM3 distances. VCSEL (850 nm) source required — LED sources produce inaccurate results. IOR ≈ 1.4820 @ 850 nm."
+    },
+    {
+      "id": "om4",
+      "ituDesignation": "G.651.1",
+      "tiaDesignation": "OM4",
+      "commonNames": ["OM4", "High-Bandwidth 50/125", "LOMMF OM4"],
+      "category": "multimode",
+      "coreDiameterMicron": 50,
+      "claddingDiameterMicron": 125,
+      "na": 0.200,
+      "attenuationAt1310nmMax": 1.0,
+      "minBendRadiusMm": 25,
+      "activelyInstalled": true,
+      "primaryUseCase": "High-performance data centers, HPC, storage networking. Supports 10G to 400 m, 40G to 150 m, 100G to 100 m. The current standard for new multimode installations.",
+      "compatibilityNotes": "Compatible with OM3 transceivers at OM3 distances. Mixed OM3/OM4 links run at OM3 limits. Same IOR as OM3 — OTDR settings are interchangeable. VCSEL source required at 850 nm."
+    },
+    {
+      "id": "om5",
+      "ituDesignation": "G.651.1 / TIA-492AAAE",
+      "tiaDesignation": "OM5",
+      "commonNames": ["OM5", "Wideband Multimode", "SWDM Fiber"],
+      "category": "multimode",
+      "coreDiameterMicron": 50,
+      "claddingDiameterMicron": 125,
+      "na": 0.200,
+      "attenuationAt1310nmMax": 1.0,
+      "minBendRadiusMm": 25,
+      "activelyInstalled": true,
+      "primaryUseCase": "Hyperscale data centers, 100G and 400G applications using SWDM4 (4 wavelengths: 850 / 880 / 910 / 940 nm). Future-ready for increasing bandwidth demands over existing duplex fiber.",
+      "compatibilityNotes": "Backward compatible with OM3 and OM4 transceivers at their respective distances. With a SWDM4 transceiver, OM5 supports 100G to 150 m over duplex LC fiber. Standard 850 nm loss testing procedure is identical to OM3/OM4.",
+      "nerdStuff": {
+        "title": "How SWDM Works on OM5",
+        "formulas": [],
+        "explanation": "Short-Wavelength Division Multiplexing (SWDM) uses 4 VCSEL wavelengths (850, 880, 910, 940 nm) to transmit 4 independent data streams on a single multimode fiber. Each wavelength carries one lane of a 100G or 400G signal (4 × 25G for 100G, 4 × 100G for 400G). OM5 fiber is optimized for low attenuation and adequate bandwidth across all four wavelengths, whereas OM3/OM4 is only specified at 850 nm. This allows 100G to be achieved with duplex LC instead of MPO-12, simplifying fiber infrastructure in high-density applications."
+      }
+    }
+  ]
+}
