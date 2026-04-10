@@ -14,15 +14,15 @@
       "backgroundColor": "#0D0D0D"
     },
     "ios": {
+      "bundleIdentifier": "com.fiberref.app",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.fiberref.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+        "backgroundColor": "#0D0D0D"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
