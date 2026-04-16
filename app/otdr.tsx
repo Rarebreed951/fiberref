@@ -1,6 +1,8 @@
-import { ScrollView, View, Text } from "react-native";
+import { useState } from "react";
+import { ScrollView, View, Pressable } from "react-native";
 import { Stack } from "expo-router";
 import AppShell from "../src/components/AppShell";
+import AppText from "../src/components/AppText";
 import {
   SectionCard,
   SectionHeader,
@@ -40,9 +42,9 @@ function CategoryBadge({ category }: { category: EventCategory }) {
   return (
     <View style={{ borderColor: c.border, backgroundColor: c.bg }}
       className="border rounded px-1.5 py-0.5">
-      <Text style={{ color: c.text }} className="text-[10px] font-semibold">
+      <AppText size="xs" color={c.text} className="font-semibold">
         {c.label}
-      </Text>
+      </AppText>
     </View>
   );
 }
@@ -50,40 +52,56 @@ function CategoryBadge({ category }: { category: EventCategory }) {
 // ─── Events ───────────────────────────────────────────────────────────────────
 
 function EventCard({ event }: { event: OTDREvent }) {
+  const [expanded, setExpanded] = useState(false);
+
   return (
-    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] p-4">
-      <View className="flex-row items-start justify-between mb-2">
-        <Text className="text-[#00FFFF] text-base font-bold flex-1 mr-2">{event.name}</Text>
+    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] overflow-hidden">
+      {/* ── Header row — always visible ── */}
+      <Pressable
+        onPress={() => setExpanded((v) => !v)}
+        className="flex-row items-center px-4 py-3"
+      >
+        <AppText size="md" color="accentCyan" className="font-bold flex-1 mr-2">
+          {event.name}
+        </AppText>
         <CategoryBadge category={event.category} />
-      </View>
+        <AppText size="xs" color="muted" style={{ marginLeft: 10 }}>
+          {expanded ? "▲" : "▼"}
+        </AppText>
+      </Pressable>
 
-      {/* Trace appearance */}
-      <View className="bg-[#111111] rounded-lg p-2 border border-[#242424] mb-3">
-        <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
-          Trace Appearance
-        </Text>
-        <Text className="text-[#A0A0A0] text-xs leading-4">{event.traceAppearance}</Text>
-      </View>
+      {/* ── Expanded detail ── */}
+      {expanded && (
+        <View className="px-4 pb-4 border-t border-[#2A2A2A]">
+          {/* Trace appearance */}
+          <View className="bg-[#111111] rounded-lg p-2 border border-[#242424] mb-3 mt-3">
+            <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
+              Trace Appearance
+            </AppText>
+            <AppText size="xs" color="secondary" className="leading-4">{event.traceAppearance}</AppText>
+          </View>
 
-      {/* Common causes */}
-      <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
-        Common Causes
-      </Text>
-      {event.commonCauses.map((cause) => (
-        <View key={cause} className="flex-row mb-0.5">
-          <Text className="text-[#555555] text-xs mr-1.5">·</Text>
-          <Text className="text-[#A0A0A0] text-xs flex-1">{cause}</Text>
+          {/* Common causes */}
+          <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
+            Common Causes
+          </AppText>
+          {event.commonCauses.map((cause) => (
+            <View key={cause} className="flex-row mb-0.5">
+              <AppText size="xs" color="muted" className="mr-1.5">·</AppText>
+              <AppText size="xs" color="secondary" className="flex-1">{cause}</AppText>
+            </View>
+          ))}
+
+          {/* Field notes */}
+          <AppText size="xs" color="secondary" className="leading-4 mt-2">{event.fieldNotes}</AppText>
+
+          {/* Warning */}
+          {event.warningFlag && <WarningBox text={event.warningFlag} />}
+
+          {/* Nerd Stuff */}
+          {event.nerdStuff && <NerdStuffSection nerd={event.nerdStuff as NerdStuff} />}
         </View>
-      ))}
-
-      {/* Field notes */}
-      <Text className="text-[#A0A0A0] text-xs leading-4 mt-2">{event.fieldNotes}</Text>
-
-      {/* Warning */}
-      {event.warningFlag && <WarningBox text={event.warningFlag} />}
-
-      {/* Nerd Stuff */}
-      {event.nerdStuff && <NerdStuffSection nerd={event.nerdStuff as NerdStuff} />}
+      )}
     </View>
   );
 }
@@ -93,20 +111,24 @@ function EventCard({ event }: { event: OTDREvent }) {
 function PulseWidthTable({ rows }: { rows: PulseWidthGuidance[] }) {
   return (
     <>
-      <TableHeader columns={["Pulse", "Range", "Use Case"]} />
+      <TableHeader columns={[
+        { label: "Pulse",    className: "w-16" },
+        { label: "Range",    className: "w-24" },
+        { label: "Use Case", className: "flex-1" },
+      ]} />
       {rows.map((row, index) => (
         <View key={row.pulseWidthNs}>
           <View className="py-2">
             <View className="flex-row items-baseline">
-              <Text className="text-white text-sm font-bold w-16">{row.pulseWidthNs} ns</Text>
-              <Text className="text-[#A0A0A0] text-xs flex-1">{row.typicalRangeKm}</Text>
+              <AppText size="sm" color="primary" className="font-bold w-16">{row.pulseWidthNs} ns</AppText>
+              <AppText size="xs" color="secondary" className="flex-1">{row.typicalRangeKm}</AppText>
             </View>
-            <Text className="text-[#A0A0A0] text-xs leading-4 mt-0.5 ml-16">
+            <AppText size="xs" color="secondary" className="leading-4 mt-0.5 ml-16">
               {row.useCase}
-            </Text>
-            <Text className="text-[#555555] text-[10px] leading-4 mt-0.5 ml-16 italic">
+            </AppText>
+            <AppText size="xs" color="muted" className="leading-4 mt-0.5 ml-16 italic">
               {row.deadZoneImpact}
-            </Text>
+            </AppText>
           </View>
           {index < rows.length - 1 && <Divider />}
         </View>
@@ -123,30 +145,30 @@ function IORTable({ rows }: { rows: IOREntry[] }) {
       {rows.map((row, index) => (
         <View key={row.ituDesignation}>
           <View className="py-2">
-            <Text className="text-white text-xs font-semibold mb-1">{row.ituDesignation}</Text>
+            <AppText size="xs" color="primary" className="font-semibold mb-1">{row.ituDesignation}</AppText>
             <View className="flex-row mb-0.5">
-              <Text className="text-[#555555] text-xs w-28">@ 1310 nm</Text>
-              <Text className="text-[#A0A0A0] text-xs">{row.ior1310}</Text>
+              <AppText size="xs" color="muted" className="w-28">@ 1310 nm</AppText>
+              <AppText size="xs" color="secondary">{row.ior1310}</AppText>
             </View>
             <View className="flex-row mb-0.5">
-              <Text className="text-[#555555] text-xs w-28">@ 1550 nm</Text>
-              <Text className="text-[#A0A0A0] text-xs">{row.ior1550}</Text>
+              <AppText size="xs" color="muted" className="w-28">@ 1550 nm</AppText>
+              <AppText size="xs" color="secondary">{row.ior1550}</AppText>
             </View>
             {row.ior1625 && (
               <View className="flex-row mb-0.5">
-                <Text className="text-[#555555] text-xs w-28">@ 1625 nm</Text>
-                <Text className="text-[#A0A0A0] text-xs">{row.ior1625}</Text>
+                <AppText size="xs" color="muted" className="w-28">@ 1625 nm</AppText>
+                <AppText size="xs" color="secondary">{row.ior1625}</AppText>
               </View>
             )}
             {row.exfoProfileName && (
               <View className="flex-row mb-0.5">
-                <Text className="text-[#555555] text-xs w-28">EXFO Profile</Text>
-                <Text className="text-[#A0A0A0] text-xs">{row.exfoProfileName}</Text>
+                <AppText size="xs" color="muted" className="w-28">EXFO Profile</AppText>
+                <AppText size="xs" color="secondary">{row.exfoProfileName}</AppText>
               </View>
             )}
-            <Text className="text-[#555555] text-[10px] leading-4 mt-1 italic">
+            <AppText size="xs" color="muted" className="leading-4 mt-1 italic">
               {row.notes}
-            </Text>
+            </AppText>
           </View>
           {index < rows.length - 1 && <Divider />}
         </View>
@@ -161,33 +183,33 @@ function WavelengthCard({ wl }: { wl: WavelengthGuide }) {
   return (
     <View className="mb-3 bg-[#111111] rounded-lg border border-[#242424] p-3">
       <View className="flex-row items-baseline mb-1">
-        <Text className="text-[#00FFFF] text-sm font-bold mr-2">{wl.wavelengthNm} nm</Text>
-        <Text className="text-[#A0A0A0] text-xs">{wl.name}</Text>
+        <AppText size="sm" color="accentCyan" className="font-bold mr-2">{wl.wavelengthNm} nm</AppText>
+        <AppText size="xs" color="secondary">{wl.name}</AppText>
         {wl.liveTrafficSafe && (
           <View className="ml-auto bg-[#00FF8815] border border-[#00FF8855] rounded px-1.5 py-0.5">
-            <Text className="text-[#00FF88] text-[10px] font-semibold">Live-Safe</Text>
+            <AppText size="xs" color="success" className="font-semibold">Live-Safe</AppText>
           </View>
         )}
       </View>
-      <Text className="text-[#A0A0A0] text-xs leading-4 mb-2">{wl.primaryUse}</Text>
-      <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
+      <AppText size="xs" color="secondary" className="leading-4 mb-2">{wl.primaryUse}</AppText>
+      <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
         Reveals
-      </Text>
+      </AppText>
       {wl.reveals.map((r) => (
         <View key={r} className="flex-row mb-0.5">
-          <Text className="text-[#555555] text-xs mr-1.5">·</Text>
-          <Text className="text-[#A0A0A0] text-xs">{r}</Text>
+          <AppText size="xs" color="muted" className="mr-1.5">·</AppText>
+          <AppText size="xs" color="secondary">{r}</AppText>
         </View>
       ))}
       {wl.limitations.length > 0 && (
         <>
-          <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mt-2 mb-1">
+          <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mt-2 mb-1">
             Limitations
-          </Text>
+          </AppText>
           {wl.limitations.map((l) => (
             <View key={l} className="flex-row mb-0.5">
-              <Text className="text-[#555555] text-xs mr-1.5">·</Text>
-              <Text className="text-[#A0A0A0] text-xs">{l}</Text>
+              <AppText size="xs" color="muted" className="mr-1.5">·</AppText>
+              <AppText size="xs" color="secondary">{l}</AppText>
             </View>
           ))}
         </>
@@ -203,17 +225,17 @@ function DeadZoneCard({ dz }: { dz: DeadZone }) {
   return (
     <View className="mb-3">
       <View className="flex-row items-center mb-1">
-        <Text className="text-[#00FFFF] text-sm font-bold mr-2">{dz.abbreviation}</Text>
-        <Text className="text-[#A0A0A0] text-xs capitalize">{dz.type} Dead Zone</Text>
+        <AppText size="sm" color="accentCyan" className="font-bold mr-2">{dz.abbreviation}</AppText>
+        <AppText size="xs" color="secondary" className="capitalize">{dz.type} Dead Zone</AppText>
       </View>
-      <Text className="text-[#A0A0A0] text-xs leading-4 mb-2">{dz.definition}</Text>
+      <AppText size="xs" color="secondary" className="leading-4 mb-2">{dz.definition}</AppText>
       <View className="flex-row mb-0.5">
-        <Text className="text-[#555555] text-xs w-32">Single-mode typical</Text>
-        <Text className="text-white text-xs flex-1">{dz.typicalValueSM}</Text>
+        <AppText size="xs" color="muted" className="w-32">Single-mode typical</AppText>
+        <AppText size="xs" color="primary" className="flex-1">{dz.typicalValueSM}</AppText>
       </View>
       <View className="flex-row mb-0.5">
-        <Text className="text-[#555555] text-xs w-32">Multimode typical</Text>
-        <Text className="text-white text-xs flex-1">{dz.typicalValueMM}</Text>
+        <AppText size="xs" color="muted" className="w-32">Multimode typical</AppText>
+        <AppText size="xs" color="primary" className="flex-1">{dz.typicalValueMM}</AppText>
       </View>
       <InfoBox text={dz.keyFact} />
       {dz.nerdStuff && <NerdStuffSection nerd={dz.nerdStuff as NerdStuff} />}
@@ -230,17 +252,21 @@ function FileFormatsTable({ formats }: { formats: FileFormat[] }) {
         <View key={fmt.extension}>
           <View className="py-2">
             <View className="flex-row items-center mb-1">
-              <Text className="text-white text-sm font-bold w-24">{fmt.extension}</Text>
+              <AppText size="sm" color="primary" className="font-bold w-24">{fmt.extension}</AppText>
               <View className={`border rounded px-1.5 py-0.5 ${fmt.isOpenStandard
                 ? "border-[#00FF8855] bg-[#00FF8815]"
                 : "border-[#44444455] bg-[#44444415]"}`}>
-                <Text className={`text-[10px] font-semibold ${fmt.isOpenStandard ? "text-[#00FF88]" : "text-[#555555]"}`}>
+                <AppText
+                  size="xs"
+                  color={fmt.isOpenStandard ? "success" : "muted"}
+                  className="font-semibold"
+                >
                   {fmt.isOpenStandard ? "Open Standard" : "Proprietary"}
-                </Text>
+                </AppText>
               </View>
             </View>
-            <Text className="text-[#A0A0A0] text-xs mb-1">{fmt.fullName} — {fmt.owner}</Text>
-            <Text className="text-[#555555] text-xs leading-4">{fmt.notes}</Text>
+            <AppText size="xs" color="secondary" className="mb-1">{fmt.fullName} — {fmt.owner}</AppText>
+            <AppText size="xs" color="muted" className="leading-4">{fmt.notes}</AppText>
           </View>
           {index < formats.length - 1 && <Divider />}
         </View>
@@ -260,17 +286,17 @@ function TerminologyTable({ rows }: { rows: TerminologyEntry[] }) {
       {rows.map((row, index) => (
         <View key={row.concept}>
           <View className="py-2">
-            <Text className="text-white text-xs font-semibold mb-2">{row.concept}</Text>
+            <AppText size="xs" color="primary" className="font-semibold mb-2">{row.concept}</AppText>
             {manufacturers.map((mfr, i) => (
               <View key={mfr} className="flex-row mb-0.5">
-                <Text className="text-[#555555] text-xs w-16">{mfr}</Text>
-                <Text className="text-[#A0A0A0] text-xs flex-1">{row[keys[i]] as string}</Text>
+                <AppText size="xs" color="muted" className="w-16">{mfr}</AppText>
+                <AppText size="xs" color="secondary" className="flex-1">{row[keys[i]] as string}</AppText>
               </View>
             ))}
             {row.notes && (
-              <Text className="text-[#555555] text-[10px] leading-4 mt-1 italic">
+              <AppText size="xs" color="muted" className="leading-4 mt-1 italic">
                 {row.notes}
-              </Text>
+              </AppText>
             )}
           </View>
           {index < rows.length - 1 && <Divider />}
@@ -299,45 +325,45 @@ export default function OtdrScreen() {
         {/* Trace Settings */}
         <SectionHeader title="Trace Settings" />
 
-        <SectionCard title="Pulse Width">
+        <SectionCard collapsible defaultOpen={false} title="Pulse Width">
           <PulseWidthTable rows={otdrData.traceSettings.pulseWidthGuidance as PulseWidthGuidance[]} />
         </SectionCard>
 
-        <SectionCard title="Range Setting">
-          <Text className="text-white text-xs font-semibold mb-1 mt-1">
+        <SectionCard collapsible defaultOpen={false} title="Range Setting">
+          <AppText size="xs" color="primary" className="font-semibold mb-1 mt-1">
             {otdrData.traceSettings.rangeSetting.rule}
-          </Text>
-          <Text className="text-[#A0A0A0] text-xs leading-4">
+          </AppText>
+          <AppText size="xs" color="secondary" className="leading-4">
             {otdrData.traceSettings.rangeSetting.exampleNote}
-          </Text>
+          </AppText>
         </SectionCard>
 
-        <SectionCard title="Averaging Time">
+        <SectionCard collapsible defaultOpen={false} title="Averaging Time">
           <View className="py-1.5">
             <View className="flex-row mb-0.5">
-              <Text className="text-[#555555] text-xs w-24">Quick check</Text>
-              <Text className="text-white text-xs">{otdrData.traceSettings.averagingTime.shortSeconds}</Text>
+              <AppText size="xs" color="muted" className="w-24">Quick check</AppText>
+              <AppText size="xs" color="primary">{otdrData.traceSettings.averagingTime.shortSeconds}</AppText>
             </View>
-            <Text className="text-[#A0A0A0] text-xs ml-24 mb-2 leading-4">
+            <AppText size="xs" color="secondary" className="ml-24 mb-2 leading-4">
               {otdrData.traceSettings.averagingTime.shortUse}
-            </Text>
+            </AppText>
             <Divider />
             <View className="flex-row mt-2 mb-0.5">
-              <Text className="text-[#555555] text-xs w-24">Acceptance</Text>
-              <Text className="text-white text-xs">{otdrData.traceSettings.averagingTime.longSeconds}</Text>
+              <AppText size="xs" color="muted" className="w-24">Acceptance</AppText>
+              <AppText size="xs" color="primary">{otdrData.traceSettings.averagingTime.longSeconds}</AppText>
             </View>
-            <Text className="text-[#A0A0A0] text-xs ml-24 mb-2 leading-4">
+            <AppText size="xs" color="secondary" className="ml-24 mb-2 leading-4">
               {otdrData.traceSettings.averagingTime.longUse}
-            </Text>
+            </AppText>
             <InfoBox text={otdrData.traceSettings.averagingTime.exfoAutoNote} />
           </View>
         </SectionCard>
 
-        <SectionCard title="IOR Settings by Fiber Type">
+        <SectionCard collapsible defaultOpen={false} title="IOR Settings by Fiber Type">
           <IORTable rows={otdrData.traceSettings.iorTable as IOREntry[]} />
         </SectionCard>
 
-        <SectionCard title="Wavelength Guide">
+        <SectionCard collapsible defaultOpen={false} title="Wavelength Guide">
           <View className="pt-1">
             {(otdrData.traceSettings.wavelengthGuide as WavelengthGuide[]).map((wl) => (
               <WavelengthCard key={wl.wavelengthNm} wl={wl} />
@@ -347,7 +373,7 @@ export default function OtdrScreen() {
 
         {/* Dead Zones */}
         <SectionHeader title="Dead Zones" />
-        <SectionCard title="Event Dead Zone (EDZ) & Attenuation Dead Zone (ADZ)">
+        <SectionCard collapsible defaultOpen={false} title="Event Dead Zone (EDZ) & Attenuation Dead Zone (ADZ)">
           {(otdrData.deadZones as DeadZone[]).map((dz, index) => (
             <View key={dz.abbreviation}>
               <DeadZoneCard dz={dz} />
@@ -358,36 +384,36 @@ export default function OtdrScreen() {
 
         {/* Bidirectional Testing */}
         <SectionHeader title="Bidirectional Testing" />
-        <SectionCard title="Why Bidirectional Testing Is Required">
-          <Text className="text-[#A0A0A0] text-xs leading-4 mt-1 mb-3">
+        <SectionCard collapsible defaultOpen={false} title="Why Bidirectional Testing Is Required">
+          <AppText size="xs" color="secondary" className="leading-4 mt-1 mb-3">
             {otdrData.bidirectionalGuide.whyRequired}
-          </Text>
-          <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
+          </AppText>
+          <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
             What Is a Gainer?
-          </Text>
-          <Text className="text-[#A0A0A0] text-xs leading-4 mb-3">
+          </AppText>
+          <AppText size="xs" color="secondary" className="leading-4 mb-3">
             {otdrData.bidirectionalGuide.whatIsGainer}
-          </Text>
-          <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
+          </AppText>
+          <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
             Real-World Example
-          </Text>
+          </AppText>
           <View className="bg-[#111111] rounded-lg p-2 border border-[#242424] mb-3">
-            <Text className="text-[#A0A0A0] text-xs leading-4">
+            <AppText size="xs" color="secondary" className="leading-4">
               {otdrData.bidirectionalGuide.realWorldExample}
-            </Text>
+            </AppText>
           </View>
-          <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
+          <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
             Procedure
-          </Text>
+          </AppText>
           {otdrData.bidirectionalGuide.procedure.map((step, i) => (
             <View key={i} className="flex-row mb-1.5">
-              <Text className="text-[#00FFFF] text-xs font-bold w-5">{i + 1}.</Text>
-              <Text className="text-[#A0A0A0] text-xs flex-1 leading-4">{step}</Text>
+              <AppText size="xs" color="accentCyan" className="font-bold w-5">{i + 1}.</AppText>
+              <AppText size="xs" color="secondary" className="flex-1 leading-4">{step}</AppText>
             </View>
           ))}
-          <Text className="text-[#555555] text-[10px] mt-2 italic">
+          <AppText size="xs" color="muted" className="mt-2 italic">
             Standard: {otdrData.bidirectionalGuide.standard}
-          </Text>
+          </AppText>
           {otdrData.bidirectionalGuide.nerdStuff && (
             <NerdStuffSection nerd={otdrData.bidirectionalGuide.nerdStuff as NerdStuff} />
           )}
@@ -395,38 +421,38 @@ export default function OtdrScreen() {
 
         {/* Launch Cable */}
         <SectionHeader title="Launch Cable" />
-        <SectionCard title="Launch Cable Guide">
-          <Text className="text-[#A0A0A0] text-xs leading-4 mt-1 mb-3">
+        <SectionCard collapsible defaultOpen={false} title="Launch Cable Guide">
+          <AppText size="xs" color="secondary" className="leading-4 mt-1 mb-3">
             {otdrData.launchCableGuide.purpose}
-          </Text>
+          </AppText>
           <View className="flex-row mb-0.5">
-            <Text className="text-[#555555] text-xs w-32">SM minimum</Text>
-            <Text className="text-white text-xs flex-1">{otdrData.launchCableGuide.minimumLengthSM}</Text>
+            <AppText size="xs" color="muted" className="w-32">SM minimum</AppText>
+            <AppText size="xs" color="primary" className="flex-1">{otdrData.launchCableGuide.minimumLengthSM}</AppText>
           </View>
           <View className="flex-row mb-0.5">
-            <Text className="text-[#555555] text-xs w-32">MM minimum</Text>
-            <Text className="text-white text-xs flex-1">{otdrData.launchCableGuide.minimumLengthMM}</Text>
+            <AppText size="xs" color="muted" className="w-32">MM minimum</AppText>
+            <AppText size="xs" color="primary" className="flex-1">{otdrData.launchCableGuide.minimumLengthMM}</AppText>
           </View>
           <View className="flex-row mb-0.5">
-            <Text className="text-[#555555] text-xs w-32">Long-haul</Text>
-            <Text className="text-white text-xs flex-1">{otdrData.launchCableGuide.longHaulMinimum}</Text>
+            <AppText size="xs" color="muted" className="w-32">Long-haul</AppText>
+            <AppText size="xs" color="primary" className="flex-1">{otdrData.launchCableGuide.longHaulMinimum}</AppText>
           </View>
           <View className="flex-row mb-0.5 mt-1">
-            <Text className="text-[#555555] text-xs w-32">EXFO formula</Text>
-            <Text className="text-white text-xs flex-1 font-mono">{otdrData.launchCableGuide.exfoFormula}</Text>
+            <AppText size="xs" color="muted" className="w-32">EXFO formula</AppText>
+            <AppText size="xs" color="primary" className="flex-1 font-mono">{otdrData.launchCableGuide.exfoFormula}</AppText>
           </View>
           <WarningBox text="Launch cable MUST match fiber type (SM or MM, same IOR) as the fiber under test." />
         </SectionCard>
 
         {/* File Formats */}
         <SectionHeader title="File Formats" />
-        <SectionCard title="OTDR File Formats">
+        <SectionCard collapsible defaultOpen={false} title="OTDR File Formats">
           <FileFormatsTable formats={otdrData.fileFormats as FileFormat[]} />
         </SectionCard>
 
         {/* Terminology */}
         <SectionHeader title="Terminology Cross-Reference" />
-        <SectionCard title="EXFO / VIAVI / Anritsu / AFL">
+        <SectionCard collapsible defaultOpen={false} title="EXFO / VIAVI / Anritsu / AFL">
           <TerminologyTable rows={otdrData.terminologyCrossReference as TerminologyEntry[]} />
         </SectionCard>
       </ScrollView>

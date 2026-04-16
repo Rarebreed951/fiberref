@@ -1,6 +1,8 @@
-import { ScrollView, View, Text } from "react-native";
+import { useState } from "react";
+import { ScrollView, View, Pressable } from "react-native";
 import { Stack } from "expo-router";
 import AppShell from "../src/components/AppShell";
+import AppText from "../src/components/AppText";
 import {
   SectionCard,
   SectionHeader,
@@ -22,7 +24,7 @@ import type { NerdStuff } from "../src/types/shared";
 function EnvTag({ label }: { label: string }) {
   return (
     <View className="border border-[#2A2A2A] rounded px-1.5 py-0.5 mr-1 mb-1">
-      <Text className="text-[#555555] text-[10px]">{label}</Text>
+      <AppText size="xs" color="muted">{label}</AppText>
     </View>
   );
 }
@@ -30,51 +32,70 @@ function EnvTag({ label }: { label: string }) {
 // ─── Enclosure Type Card ──────────────────────────────────────────────────────
 
 function EnclosureTypeCard({ enclosureType }: { enclosureType: EnclosureType }) {
+  const [expanded, setExpanded] = useState(false);
+
   return (
-    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] p-4">
-      <Text className="text-[#00FFFF] text-base font-bold mb-0.5">{enclosureType.name}</Text>
-      <Text className="text-[#A0A0A0] text-xs mb-2">
-        {enclosureType.commonAliases.join(" · ")}
-      </Text>
-
-      {/* Environments */}
-      <View className="flex-row flex-wrap mb-2">
-        {enclosureType.mountingEnvironments.map((env) => (
-          <EnvTag key={env} label={env} />
-        ))}
-      </View>
-
-      {/* Capacity */}
-      <View className="flex-row mb-3">
-        <View className="flex-1 mr-2 bg-[#111111] rounded-lg p-2 border border-[#242424]">
-          <Text className="text-[#555555] text-[10px] uppercase tracking-wider mb-0.5">
-            Splice Capacity
-          </Text>
-          <Text className="text-white text-xs font-semibold">{enclosureType.spliceCapacityRange}</Text>
+    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] overflow-hidden">
+      <Pressable onPress={() => setExpanded((v) => !v)} className="px-4 py-3">
+        <View className="flex-row items-center">
+          <AppText size="md" color="accentCyan" className="font-bold flex-1 mr-2">
+            {enclosureType.name}
+          </AppText>
+          <AppText size="xs" color="muted">{expanded ? "▲" : "▼"}</AppText>
         </View>
-        <View className="flex-1 bg-[#111111] rounded-lg p-2 border border-[#242424]">
-          <Text className="text-[#555555] text-[10px] uppercase tracking-wider mb-0.5">
-            Max Fiber Count
-          </Text>
-          <Text className="text-white text-xs font-semibold">{enclosureType.maxFiberCountRange}</Text>
+        <AppText size="xs" color="secondary" className="mt-0.5">
+          {enclosureType.commonAliases.join(" · ")}
+        </AppText>
+        <View className="flex-row flex-wrap mt-1.5">
+          {enclosureType.mountingEnvironments.map((env) => (
+            <EnvTag key={env} label={env} />
+          ))}
         </View>
-      </View>
+      </Pressable>
 
-      {/* Key features */}
-      <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
-        Key Features
-      </Text>
-      {enclosureType.keyFeatures.map((feature) => (
-        <View key={feature} className="flex-row mb-0.5">
-          <Text className="text-[#555555] text-xs mr-1.5">·</Text>
-          <Text className="text-[#A0A0A0] text-xs flex-1 leading-4">{feature}</Text>
+      {expanded && (
+        <View className="px-4 pb-4 border-t border-[#2A2A2A]">
+          {/* Capacity */}
+          <View className="flex-row mt-3 mb-3">
+            <View className="flex-1 mr-2 bg-[#111111] rounded-lg p-2 border border-[#242424]">
+              <AppText size="xs" color="muted" className="uppercase tracking-wider mb-0.5">
+                Splice Capacity
+              </AppText>
+              <AppText size="xs" color="primary" className="font-semibold">
+                {enclosureType.spliceCapacityRange}
+              </AppText>
+            </View>
+            <View className="flex-1 bg-[#111111] rounded-lg p-2 border border-[#242424]">
+              <AppText size="xs" color="muted" className="uppercase tracking-wider mb-0.5">
+                Max Fiber Count
+              </AppText>
+              <AppText size="xs" color="primary" className="font-semibold">
+                {enclosureType.maxFiberCountRange}
+              </AppText>
+            </View>
+          </View>
+
+          {/* Key features */}
+          <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
+            Key Features
+          </AppText>
+          {enclosureType.keyFeatures.map((feature) => (
+            <View key={feature} className="flex-row mb-0.5">
+              <AppText size="xs" color="muted" className="mr-1.5">·</AppText>
+              <AppText size="xs" color="secondary" className="flex-1 leading-4">{feature}</AppText>
+            </View>
+          ))}
+
+          {/* Field notes */}
+          <AppText size="xs" color="secondary" className="leading-4 mt-2">
+            {enclosureType.fieldNotes}
+          </AppText>
+
+          {enclosureType.nerdStuff && (
+            <NerdStuffSection nerd={enclosureType.nerdStuff as NerdStuff} />
+          )}
         </View>
-      ))}
-
-      {/* Field notes */}
-      <Text className="text-[#A0A0A0] text-xs leading-4 mt-2">{enclosureType.fieldNotes}</Text>
-
-      {enclosureType.nerdStuff && <NerdStuffSection nerd={enclosureType.nerdStuff as NerdStuff} />}
+      )}
     </View>
   );
 }
@@ -85,7 +106,7 @@ function ModelRow({ model }: { model: EnclosureModel }) {
   return (
     <View className="py-2">
       <View className="flex-row items-baseline mb-0.5">
-        <Text className="text-white text-xs font-bold mr-2">{model.modelName}</Text>
+        <AppText size="xs" color="primary" className="font-bold mr-2">{model.modelName}</AppText>
         <View className="flex-row flex-wrap flex-1">
           {model.environments.map((env) => (
             <EnvTag key={env} label={env} />
@@ -94,39 +115,53 @@ function ModelRow({ model }: { model: EnclosureModel }) {
       </View>
       <View className="flex-row mb-1">
         <View className="flex-row mr-3">
-          <Text className="text-[#555555] text-xs mr-1">Trays</Text>
-          <Text className="text-[#A0A0A0] text-xs">{model.maxSpliceTrays}</Text>
+          <AppText size="xs" color="muted" className="mr-1">Trays</AppText>
+          <AppText size="xs" color="secondary">{model.maxSpliceTrays}</AppText>
         </View>
         <View className="flex-row">
-          <Text className="text-[#555555] text-xs mr-1">Max fibers</Text>
-          <Text className="text-[#A0A0A0] text-xs">{model.maxFibers}F</Text>
+          <AppText size="xs" color="muted" className="mr-1">Max fibers</AppText>
+          <AppText size="xs" color="secondary">{model.maxFibers}F</AppText>
         </View>
       </View>
-      <Text className="text-[#555555] text-[10px] leading-4 italic">{model.notes}</Text>
+      <AppText size="xs" color="muted" className="leading-4 italic">{model.notes}</AppText>
     </View>
   );
 }
 
 function BrandCard({ brand }: { brand: EnclosureBrand }) {
+  const [expanded, setExpanded] = useState(false);
+
   return (
-    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] p-4">
-      <Text className="text-[#00FFFF] text-base font-bold mb-2">
-        {brand.manufacturer}
-      </Text>
+    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] overflow-hidden">
+      <Pressable
+        onPress={() => setExpanded((v) => !v)}
+        className="flex-row items-center px-4 py-3"
+      >
+        <AppText size="md" color="accentCyan" className="font-bold flex-1">
+          {brand.manufacturer}
+        </AppText>
+        <AppText size="xs" color="muted" style={{ marginLeft: 8 }}>
+          {expanded ? "▲" : "▼"}
+        </AppText>
+      </Pressable>
 
-      <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
-        Notable Models
-      </Text>
-      {brand.notableModels.map((model, index) => (
-        <View key={model.modelName}>
-          <ModelRow model={model} />
-          {index < brand.notableModels.length - 1 && <Divider />}
+      {expanded && (
+        <View className="px-4 pb-4 border-t border-[#2A2A2A]">
+          <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1 mt-3">
+            Notable Models
+          </AppText>
+          {brand.notableModels.map((model, index) => (
+            <View key={model.modelName}>
+              <ModelRow model={model} />
+              {index < brand.notableModels.length - 1 && <Divider />}
+            </View>
+          ))}
+
+          <View className="mt-2 bg-[#111111] rounded-lg p-2 border border-[#242424]">
+            <AppText size="xs" color="secondary" className="leading-4">{brand.notes}</AppText>
+          </View>
         </View>
-      ))}
-
-      <View className="mt-2 bg-[#111111] rounded-lg p-2 border border-[#242424]">
-        <Text className="text-[#A0A0A0] text-xs leading-4">{brand.notes}</Text>
-      </View>
+      )}
     </View>
   );
 }
@@ -140,7 +175,7 @@ function SpliceTrayTable({ trays }: { trays: SpliceTray[] }) {
         <View key={tray.id}>
           <View className="py-2">
             <View className="flex-row items-center mb-1">
-              <Text className="text-white text-xs font-bold flex-1">{tray.name}</Text>
+              <AppText size="xs" color="primary" className="font-bold flex-1">{tray.name}</AppText>
               <View
                 className={`border rounded px-1.5 py-0.5 ${
                   tray.ribbonCapable
@@ -148,28 +183,28 @@ function SpliceTrayTable({ trays }: { trays: SpliceTray[] }) {
                     : "border-[#44444455] bg-[#44444415]"
                 }`}
               >
-                <Text
-                  className={`text-[10px] font-semibold ${
-                    tray.ribbonCapable ? "text-[#00FFFF]" : "text-[#555555]"
-                  }`}
+                <AppText
+                  size="xs"
+                  color={tray.ribbonCapable ? "accentCyan" : "muted"}
+                  className="font-semibold"
                 >
                   {tray.ribbonCapable ? "Ribbon capable" : "Single-fiber only"}
-                </Text>
+                </AppText>
               </View>
             </View>
             <View className="flex-row mb-1">
-              <Text className="text-[#555555] text-xs w-28">Fusion capacity</Text>
-              <Text className="text-[#A0A0A0] text-xs">
+              <AppText size="xs" color="muted" className="w-28">Fusion capacity</AppText>
+              <AppText size="xs" color="secondary">
                 {tray.fusionCapacity} splices
-              </Text>
+              </AppText>
             </View>
             <View className="flex-row mb-1">
-              <Text className="text-[#555555] text-xs w-28">Compatible with</Text>
-              <Text className="text-[#A0A0A0] text-xs flex-1">
+              <AppText size="xs" color="muted" className="w-28">Compatible with</AppText>
+              <AppText size="xs" color="secondary" className="flex-1">
                 {tray.compatibleManufacturers.join(", ")}
-              </Text>
+              </AppText>
             </View>
-            <Text className="text-[#555555] text-[10px] leading-4 italic">{tray.notes}</Text>
+            <AppText size="xs" color="muted" className="leading-4 italic">{tray.notes}</AppText>
           </View>
           {index < trays.length - 1 && <Divider />}
         </View>
@@ -194,14 +229,14 @@ function SelectionGuideTable({ guide }: { guide: EnclosureSelectionGuide[] }) {
       {guide.map((entry, index) => (
         <View key={entry.scenario}>
           <View className="py-2">
-            <Text className="text-white text-xs font-semibold mb-1">{entry.scenario}</Text>
+            <AppText size="xs" color="primary" className="font-semibold mb-1">{entry.scenario}</AppText>
             <View className="flex-row items-center mb-1">
-              <Text className="text-[#555555] text-xs mr-1.5">→</Text>
-              <Text className="text-[#00FFFF] text-xs font-semibold">
+              <AppText size="xs" color="muted" className="mr-1.5">→</AppText>
+              <AppText size="xs" color="accentCyan" className="font-semibold">
                 {TYPE_NAME_MAP[entry.recommendedTypeId] ?? entry.recommendedTypeId}
-              </Text>
+              </AppText>
             </View>
-            <Text className="text-[#555555] text-[10px] leading-4 italic">{entry.notes}</Text>
+            <AppText size="xs" color="muted" className="leading-4 italic">{entry.notes}</AppText>
           </View>
           {index < guide.length - 1 && <Divider />}
         </View>
@@ -231,12 +266,12 @@ export default function EnclosuresScreen() {
         ))}
 
         <SectionHeader title="Splice Trays" />
-        <SectionCard title="Tray Types">
+        <SectionCard title="Tray Types" collapsible defaultOpen={false}>
           <SpliceTrayTable trays={enclosureData.spliceTrays as SpliceTray[]} />
         </SectionCard>
 
         <SectionHeader title="Selection Guide" />
-        <SectionCard title="Recommended Enclosure by Scenario">
+        <SectionCard title="Recommended Enclosure by Scenario" collapsible defaultOpen={false}>
           <SelectionGuideTable
             guide={enclosureData.selectionGuide as EnclosureSelectionGuide[]}
           />

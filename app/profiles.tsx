@@ -2,250 +2,284 @@ import { useState, useEffect, useCallback } from "react";
 import {
   ScrollView,
   View,
-  Text,
   TextInput,
   Pressable,
   Modal,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Stack } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AppShell from "../src/components/AppShell";
+import AppText from "../src/components/AppText";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface Profile {
+interface SubProfile {
   id: string;
-  siteName: string;
-  contactName: string;
-  phone: string;
-  fiberType: string;
-  fiberCount: string;
+  name: string;
+  bulkheadInsertionLoss: number;    // dB max per mated pair
+  bulkheadReflectance: number;      // dB min (negative, e.g. -45)
+  spliceLossUnidirectional: number; // dB max per fusion splice
+  spliceLossBidirectional: number;  // dB max per fusion splice
+  orl: number;                      // dB min optical return loss
   notes: string;
-  createdAt: number;
 }
 
-type ProfileDraft = Omit<Profile, "id" | "createdAt">;
+interface CustomerProfile {
+  id: string;
+  customerName: string;
+  subProfiles: SubProfile[];
+  createdAt: string;
+  updatedAt: string;
+}
 
-const STORAGE_KEY = "@fiberref/profiles";
+type SubProfileDraft = Omit<SubProfile, "id">;
+type CustomerDraft = Pick<CustomerProfile, "customerName">;
 
-const FIBER_TYPE_OPTIONS = ["SMF OS2", "OM3", "OM4", "OM5", "Mixed"];
+// Numeric fields stored as strings inside forms so TextInput stays controlled.
+type SubProfileFormDraft = {
+  name: string;
+  bulkheadInsertionLoss: string;
+  bulkheadReflectance: string;
+  spliceLossUnidirectional: string;
+  spliceLossBidirectional: string;
+  orl: string;
+  notes: string;
+};
 
-// ─── Storage helpers ──────────────────────────────────────────────────────────
+// ─── Modal state ──────────────────────────────────────────────────────────────
 
-async function loadProfiles(): Promise<Profile[]> {
+type ModalState =
+  | { kind: "none" }
+  | { kind: "newCustomer" }
+  | { kind: "editCustomer"; customer: CustomerProfile }
+  | { kind: "newSubProfile"; customerId: string }
+  | { kind: "editSubProfile"; customerId: string; sp: SubProfile };
+
+// ─── Storage ──────────────────────────────────────────────────────────────────
+
+const STORAGE_KEY = "@fiberref/customers_v2";
+
+async function loadCustomers(): Promise<CustomerProfile[]> {
   const raw = await AsyncStorage.getItem(STORAGE_KEY);
-  return raw ? (JSON.parse(raw) as Profile[]) : [];
+  return raw ? (JSON.parse(raw) as CustomerProfile[]) : [];
 }
 
-async function saveProfiles(profiles: Profile[]): Promise<void> {
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
+async function saveCustomers(customers: CustomerProfile[]): Promise<void> {
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
 }
 
-// ─── Empty draft ──────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function emptyDraft(): ProfileDraft {
+function parseNum(value: string): number {
+  const n = parseFloat(value);
+  return isNaN(n) ? 0 : n;
+}
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+// ─── Default drafts ───────────────────────────────────────────────────────────
+
+function emptyCustomerDraft(): CustomerDraft {
+  return { customerName: "" };
+}
+
+function emptySubProfileFormDraft(): SubProfileFormDraft {
   return {
-    siteName: "",
-    contactName: "",
-    phone: "",
-    fiberType: "SMF OS2",
-    fiberCount: "",
+    name: "",
+    bulkheadInsertionLoss: "0.5",
+    bulkheadReflectance: "-45",
+    spliceLossUnidirectional: "0.1",
+    spliceLossBidirectional: "0.1",
+    orl: "30",
     notes: "",
   };
 }
 
-// ─── Form field ───────────────────────────────────────────────────────────────
+function subProfileToFormDraft(sp: SubProfileDraft): SubProfileFormDraft {
+  return {
+    name: sp.name,
+    bulkheadInsertionLoss: String(sp.bulkheadInsertionLoss),
+    bulkheadReflectance: String(sp.bulkheadReflectance),
+    spliceLossUnidirectional: String(sp.spliceLossUnidirectional),
+    spliceLossBidirectional: String(sp.spliceLossBidirectional),
+    orl: String(sp.orl),
+    notes: sp.notes,
+  };
+}
+
+function formDraftToSubProfile(fd: SubProfileFormDraft): SubProfileDraft {
+  return {
+    name: fd.name,
+    bulkheadInsertionLoss: parseNum(fd.bulkheadInsertionLoss),
+    bulkheadReflectance: parseNum(fd.bulkheadReflectance),
+    spliceLossUnidirectional: parseNum(fd.spliceLossUnidirectional),
+    spliceLossBidirectional: parseNum(fd.spliceLossBidirectional),
+    orl: parseNum(fd.orl),
+    notes: fd.notes,
+  };
+}
+
+// ─── Form primitives ──────────────────────────────────────────────────────────
 
 function FormField({
   label,
   value,
   onChangeText,
   placeholder,
-  multiline = false,
-  keyboardType = "default",
 }: {
   label: string;
   value: string;
-  onChangeText: (text: string) => void;
+  onChangeText: (t: string) => void;
   placeholder?: string;
-  multiline?: boolean;
-  keyboardType?: "default" | "phone-pad" | "numeric";
 }) {
   return (
     <View className="mb-3">
-      <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
+      <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
         {label}
-      </Text>
+      </AppText>
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor="#333333"
-        keyboardType={keyboardType}
-        multiline={multiline}
-        numberOfLines={multiline ? 3 : 1}
         className="bg-[#111111] border border-[#2A2A2A] rounded-lg px-3 py-2 text-white text-sm"
-        style={multiline ? { height: 72, textAlignVertical: "top" } : undefined}
       />
     </View>
   );
 }
 
-// ─── Fiber type selector ──────────────────────────────────────────────────────
-
-function FiberTypeSelector({
+function DbField({
+  label,
+  hint,
   value,
-  onSelect,
+  onChangeText,
 }: {
+  label: string;
+  hint?: string;
   value: string;
-  onSelect: (type: string) => void;
+  onChangeText: (t: string) => void;
 }) {
   return (
-    <View className="mb-3">
-      <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
-        Fiber Type
-      </Text>
-      <View className="flex-row flex-wrap">
-        {FIBER_TYPE_OPTIONS.map((option) => {
-          const isSelected = option === value;
-          return (
-            <Pressable
-              key={option}
-              onPress={() => onSelect(option)}
-              className={`border rounded-lg px-2.5 py-1.5 mr-2 mb-2 ${
-                isSelected
-                  ? "border-[#00FFFF] bg-[#00FFFF15]"
-                  : "border-[#2A2A2A] bg-[#111111]"
-              }`}
-            >
-              <Text
-                className={`text-xs font-semibold ${
-                  isSelected ? "text-[#00FFFF]" : "text-[#555555]"
-                }`}
-              >
-                {option}
-              </Text>
-            </Pressable>
-          );
-        })}
+    <View className="flex-row items-center mb-2.5">
+      <View className="flex-1 pr-3">
+        <AppText size="xs" color="secondary">{label}</AppText>
+        {hint !== undefined && (
+          <AppText size="xs" color="muted" className="leading-3 mt-0.5">{hint}</AppText>
+        )}
+      </View>
+      <View className="flex-row items-center bg-[#111111] border border-[#2A2A2A] rounded-lg px-2 py-1.5">
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          keyboardType="numbers-and-punctuation"
+          className="text-white text-xs w-16 text-right"
+          placeholderTextColor="#444444"
+          selectTextOnFocus
+        />
+        <AppText size="xs" color="muted" className="ml-1.5">dB</AppText>
       </View>
     </View>
   );
 }
 
-// ─── Profile form modal ───────────────────────────────────────────────────────
+// ─── Threshold table ──────────────────────────────────────────────────────────
 
-function ProfileFormModal({
-  visible,
-  initial,
-  onSave,
-  onCancel,
-}: {
-  visible: boolean;
-  initial: ProfileDraft;
-  onSave: (draft: ProfileDraft) => void;
-  onCancel: () => void;
-}) {
-  const [draft, setDraft] = useState<ProfileDraft>(initial);
-
-  // Sync when modal opens with a new initial value
-  useEffect(() => {
-    setDraft(initial);
-  }, [initial]);
-
-  function set(key: keyof ProfileDraft, value: string) {
-    setDraft((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function handleSave() {
-    if (!draft.siteName.trim()) {
-      Alert.alert("Required", "Site name is required.");
-      return;
-    }
-    onSave(draft);
-  }
+function ThresholdTable({ sp }: { sp: SubProfile }) {
+  const rows: [string, string][] = [
+    ["Bulkhead insertion loss", `≤ ${sp.bulkheadInsertionLoss.toFixed(2)} dB`],
+    ["Bulkhead reflectance", `≥ ${sp.bulkheadReflectance.toFixed(1)} dB`],
+    ["Splice loss (uni)", `≤ ${sp.spliceLossUnidirectional.toFixed(2)} dB`],
+    ["Splice loss (bi)", `≤ ${sp.spliceLossBidirectional.toFixed(2)} dB`],
+    ["ORL", `≥ ${sp.orl.toFixed(1)} dB`],
+  ];
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <View className="flex-1 bg-[#0D0D0D]">
-        {/* Modal header */}
-        <View className="flex-row items-center px-4 py-3 border-b border-[#1A1A1A]">
-          <Pressable onPress={onCancel} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-            <Text className="text-[#555555] text-sm">Cancel</Text>
-          </Pressable>
-          <Text className="text-white text-base font-semibold flex-1 text-center">
-            Profile
-          </Text>
-          <Pressable onPress={handleSave} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-            <Text className="text-[#00FFFF] text-sm font-semibold">Save</Text>
-          </Pressable>
+    <View className="mt-1">
+      {rows.map(([label, value]) => (
+        <View key={label} className="flex-row py-1 border-b border-[#1E1E1E]">
+          <AppText size="xs" color="muted" className="flex-1">{label}</AppText>
+          <AppText size="xs" color="primary" className="font-semibold">{value}</AppText>
         </View>
-
-        <ScrollView
-          className="flex-1 px-4 pt-4"
-          keyboardShouldPersistTaps="handled"
-        >
-          <FormField
-            label="Site Name *"
-            value={draft.siteName}
-            onChangeText={(v) => set("siteName", v)}
-            placeholder="e.g. Acme Corp — Building A"
-          />
-          <FormField
-            label="Contact Name"
-            value={draft.contactName}
-            onChangeText={(v) => set("contactName", v)}
-            placeholder="e.g. Jane Smith"
-          />
-          <FormField
-            label="Phone"
-            value={draft.phone}
-            onChangeText={(v) => set("phone", v)}
-            placeholder="e.g. 555-867-5309"
-            keyboardType="phone-pad"
-          />
-          <FiberTypeSelector
-            value={draft.fiberType}
-            onSelect={(v) => set("fiberType", v)}
-          />
-          <FormField
-            label="Fiber Count"
-            value={draft.fiberCount}
-            onChangeText={(v) => set("fiberCount", v)}
-            placeholder="e.g. 144F"
-            keyboardType="default"
-          />
-          <FormField
-            label="Notes"
-            value={draft.notes}
-            onChangeText={(v) => set("notes", v)}
-            placeholder="Route, splice locations, access notes…"
-            multiline
-          />
-          {/* Bottom padding for keyboard */}
-          <View className="h-16" />
-        </ScrollView>
-      </View>
-    </Modal>
+      ))}
+      {sp.notes !== "" && (
+        <AppText size="xs" color="muted" className="italic mt-2 leading-4">{sp.notes}</AppText>
+      )}
+    </View>
   );
 }
 
-// ─── Profile card ─────────────────────────────────────────────────────────────
+// ─── Sub-profile card ─────────────────────────────────────────────────────────
 
-function ProfileCard({
-  profile,
+function SubProfileCard({
+  sp,
   onEdit,
   onDelete,
 }: {
-  profile: Profile;
+  sp: SubProfile;
   onEdit: () => void;
   onDelete: () => void;
 }) {
   function confirmDelete() {
+    Alert.alert("Delete Sub-Profile", `Delete "${sp.name}"?`, [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: onDelete },
+    ]);
+  }
+
+  return (
+    <View className="mt-2 bg-[#111111] rounded-lg border border-[#222222] px-3 pt-2 pb-2">
+      <View className="flex-row items-center mb-1">
+        <AppText size="sm" color="accentCyan" className="font-semibold flex-1">{sp.name}</AppText>
+        <Pressable
+          onPress={onEdit}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          className="mr-4"
+          accessibilityRole="button"
+          accessibilityLabel={`Edit ${sp.name}`}
+        >
+          <AppText size="xs" color="muted">Edit</AppText>
+        </Pressable>
+        <Pressable
+          onPress={confirmDelete}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel={`Delete ${sp.name}`}
+        >
+          <AppText size="xs" color="danger">Delete</AppText>
+        </Pressable>
+      </View>
+      <ThresholdTable sp={sp} />
+    </View>
+  );
+}
+
+// ─── Customer card ────────────────────────────────────────────────────────────
+
+function CustomerCard({
+  customer,
+  onRename,
+  onDelete,
+  onAddSubProfile,
+  onEditSubProfile,
+  onDeleteSubProfile,
+}: {
+  customer: CustomerProfile;
+  onRename: () => void;
+  onDelete: () => void;
+  onAddSubProfile: () => void;
+  onEditSubProfile: (sp: SubProfile) => void;
+  onDeleteSubProfile: (spId: string) => void;
+}) {
+  function confirmDelete() {
     Alert.alert(
-      "Delete Profile",
-      `Delete "${profile.siteName}"? This cannot be undone.`,
+      "Delete Customer",
+      `Delete "${customer.customerName}" and all threshold profiles? This cannot be undone.`,
       [
         { text: "Cancel", style: "cancel" },
         { text: "Delete", style: "destructive", onPress: onDelete },
@@ -254,41 +288,251 @@ function ProfileCard({
   }
 
   return (
-    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] p-4">
-      <View className="flex-row items-start mb-2">
-        <Text className="text-[#00FFFF] text-base font-bold flex-1 mr-2">
-          {profile.siteName}
-        </Text>
-        <View className="border border-[#2A2A2A] rounded px-1.5 py-0.5">
-          <Text className="text-[#555555] text-[10px]">{profile.fiberType}</Text>
-        </View>
-      </View>
-
-      {profile.contactName !== "" && (
-        <Text className="text-[#A0A0A0] text-xs mb-0.5">{profile.contactName}</Text>
-      )}
-      {profile.phone !== "" && (
-        <Text className="text-[#555555] text-xs mb-0.5">{profile.phone}</Text>
-      )}
-      {profile.fiberCount !== "" && (
-        <Text className="text-[#555555] text-xs mb-0.5">{profile.fiberCount}</Text>
-      )}
-      {profile.notes !== "" && (
-        <Text className="text-[#444444] text-xs leading-4 mt-1 italic">
-          {profile.notes}
-        </Text>
-      )}
-
-      <View className="flex-row mt-3 pt-3 border-t border-[#242424]">
-        <Pressable onPress={onEdit} className="flex-1 items-center py-1" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text className="text-[#00FFFF] text-xs font-semibold">Edit</Text>
+    <View className="mx-3 mb-4 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] p-4">
+      {/* Header */}
+      <View className="flex-row items-center mb-3">
+        <AppText size="md" color="accentCyan" className="font-bold flex-1">{customer.customerName}</AppText>
+        <Pressable
+          onPress={onRename}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          className="mr-4"
+          accessibilityRole="button"
+          accessibilityLabel={`Rename ${customer.customerName}`}
+        >
+          <AppText size="xs" color="muted">Rename</AppText>
         </Pressable>
-        <View className="w-[1px] bg-[#242424]" />
-        <Pressable onPress={confirmDelete} className="flex-1 items-center py-1" hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text className="text-[#FF4444] text-xs font-semibold">Delete</Text>
+        <Pressable
+          onPress={confirmDelete}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel={`Delete ${customer.customerName}`}
+        >
+          <AppText size="xs" color="danger">Delete</AppText>
         </Pressable>
       </View>
+
+      {/* Sub-profile list */}
+      {customer.subProfiles.length === 0 ? (
+        <AppText size="xs" color="muted" className="italic">No threshold profiles yet.</AppText>
+      ) : (
+        customer.subProfiles.map((sp) => (
+          <SubProfileCard
+            key={sp.id}
+            sp={sp}
+            onEdit={() => onEditSubProfile(sp)}
+            onDelete={() => onDeleteSubProfile(sp.id)}
+          />
+        ))
+      )}
+
+      {/* Add threshold profile */}
+      <Pressable
+        onPress={onAddSubProfile}
+        className="mt-3 border border-[#2A2A2A] rounded-lg py-2 items-center"
+        accessibilityRole="button"
+        accessibilityLabel={`Add threshold profile for ${customer.customerName}`}
+      >
+        <AppText size="xs" color="muted" className="font-semibold">+ Add Threshold Profile</AppText>
+      </Pressable>
     </View>
+  );
+}
+
+// ─── Customer name modal ──────────────────────────────────────────────────────
+
+function CustomerModal({
+  visible,
+  initial,
+  onSave,
+  onCancel,
+}: {
+  visible: boolean;
+  initial: CustomerDraft;
+  onSave: (draft: CustomerDraft) => void;
+  onCancel: () => void;
+}) {
+  const insets = useSafeAreaInsets();
+  const [draft, setDraft] = useState<CustomerDraft>(initial);
+
+  useEffect(() => {
+    setDraft(initial);
+  }, [initial]);
+
+  function handleSave() {
+    if (!draft.customerName.trim()) {
+      Alert.alert("Required", "Customer name is required.");
+      return;
+    }
+    onSave(draft);
+  }
+
+  return (
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1, backgroundColor: "#0D0D0D" }}
+      >
+        <View className="flex-row items-center px-4 py-3 border-b border-[#1A1A1A]">
+          <Pressable
+            onPress={onCancel}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel"
+          >
+            <AppText size="sm" color="muted">Cancel</AppText>
+          </Pressable>
+          <AppText size="md" color="primary" className="font-semibold flex-1 text-center">
+            Customer
+          </AppText>
+          <Pressable
+            onPress={handleSave}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            accessibilityRole="button"
+            accessibilityLabel="Save customer"
+          >
+            <AppText size="sm" color="accentCyan" className="font-semibold">Save</AppText>
+          </Pressable>
+        </View>
+        <View className="px-4 pt-4">
+          <FormField
+            label="Customer Name *"
+            value={draft.customerName}
+            onChangeText={(v) => setDraft({ customerName: v })}
+            placeholder="e.g. Acme Corp"
+          />
+        </View>
+        <View style={{ height: insets.bottom }} />
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+
+// ─── Sub-profile modal ────────────────────────────────────────────────────────
+
+function SubProfileModal({
+  visible,
+  initial,
+  onSave,
+  onCancel,
+}: {
+  visible: boolean;
+  initial: SubProfileFormDraft;
+  onSave: (draft: SubProfileDraft) => void;
+  onCancel: () => void;
+}) {
+  const insets = useSafeAreaInsets();
+  const [draft, setDraft] = useState<SubProfileFormDraft>(initial);
+
+  useEffect(() => {
+    setDraft(initial);
+  }, [initial]);
+
+  function set(key: keyof SubProfileFormDraft, value: string) {
+    setDraft((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function handleSave() {
+    if (!draft.name.trim()) {
+      Alert.alert("Required", "Profile name is required.");
+      return;
+    }
+    onSave(formDraftToSubProfile(draft));
+  }
+
+  return (
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1, backgroundColor: "#0D0D0D" }}
+      >
+        <View className="flex-row items-center px-4 py-3 border-b border-[#1A1A1A]">
+          <Pressable
+            onPress={onCancel}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel"
+          >
+            <AppText size="sm" color="muted">Cancel</AppText>
+          </Pressable>
+          <AppText size="md" color="primary" className="font-semibold flex-1 text-center">
+            Threshold Profile
+          </AppText>
+          <Pressable
+            onPress={handleSave}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            accessibilityRole="button"
+            accessibilityLabel="Save threshold profile"
+          >
+            <AppText size="sm" color="accentCyan" className="font-semibold">Save</AppText>
+          </Pressable>
+        </View>
+
+        <ScrollView
+          className="flex-1 px-4 pt-4"
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+        >
+          <FormField
+            label="Profile Name *"
+            value={draft.name}
+            onChangeText={(v) => set("name", v)}
+            placeholder="e.g. Long Haul, Metro, Underground"
+          />
+
+          <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-2 mt-1">
+            Thresholds
+          </AppText>
+
+          <DbField
+            label="Bulkhead insertion loss"
+            hint="max dB per mated pair"
+            value={draft.bulkheadInsertionLoss}
+            onChangeText={(v) => set("bulkheadInsertionLoss", v)}
+          />
+          <DbField
+            label="Bulkhead reflectance"
+            hint="min dB — negative value (e.g. -45)"
+            value={draft.bulkheadReflectance}
+            onChangeText={(v) => set("bulkheadReflectance", v)}
+          />
+          <DbField
+            label="Splice loss — unidirectional"
+            hint="max dB per fusion splice"
+            value={draft.spliceLossUnidirectional}
+            onChangeText={(v) => set("spliceLossUnidirectional", v)}
+          />
+          <DbField
+            label="Splice loss — bidirectional"
+            hint="max dB per fusion splice"
+            value={draft.spliceLossBidirectional}
+            onChangeText={(v) => set("spliceLossBidirectional", v)}
+          />
+          <DbField
+            label="ORL"
+            hint="min dB optical return loss"
+            value={draft.orl}
+            onChangeText={(v) => set("orl", v)}
+          />
+
+          <View className="mt-2 mb-3">
+            <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
+              Notes
+            </AppText>
+            <TextInput
+              value={draft.notes}
+              onChangeText={(v) => set("notes", v)}
+              placeholder="Contract spec reference, scope of work, access notes…"
+              placeholderTextColor="#333333"
+              multiline
+              numberOfLines={3}
+              className="bg-[#111111] border border-[#2A2A2A] rounded-lg px-3 py-2 text-white text-sm"
+              style={{ height: 72, textAlignVertical: "top" }}
+            />
+          </View>
+
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </Modal>
   );
 }
 
@@ -297,21 +541,19 @@ function ProfileCard({
 function EmptyState({ onAdd }: { onAdd: () => void }) {
   return (
     <View className="flex-1 items-center justify-center px-8">
-      <Text className="text-[#2A2A2A] text-5xl mb-4">◈</Text>
-      <Text className="text-[#555555] text-sm font-semibold text-center mb-1">
+      <AppText size="md" color="muted" className="mb-4" style={{ fontSize: 48 }}>◈</AppText>
+      <AppText size="sm" color="muted" className="font-semibold text-center mb-1">
         No profiles yet
-      </Text>
-      <Text className="text-[#333333] text-xs text-center mb-6 leading-4">
-        Save customer sites, contact info, and fiber plant details for quick
-        access in the field.
-      </Text>
+      </AppText>
+      <AppText size="xs" color="muted" className="text-center mb-6 leading-4">
+        Save per-customer threshold templates — bulkhead loss, reflectance, splice loss,
+        and ORL — for quick pass/fail reference in the field.
+      </AppText>
       <Pressable
         onPress={onAdd}
         className="border border-[#00FFFF] rounded-xl px-5 py-2.5"
       >
-        <Text className="text-[#00FFFF] text-sm font-semibold">
-          Add First Profile
-        </Text>
+        <AppText size="sm" color="accentCyan" className="font-semibold">Create First Profile</AppText>
       </Pressable>
     </View>
   );
@@ -320,60 +562,113 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function ProfilesScreen() {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
+  const [customers, setCustomers] = useState<CustomerProfile[]>([]);
+  const [modal, setModal] = useState<ModalState>({ kind: "none" });
 
   useEffect(() => {
-    loadProfiles().then(setProfiles);
+    loadCustomers().then(setCustomers);
   }, []);
 
-  const persistAndSet = useCallback(async (updated: Profile[]) => {
-    setProfiles(updated);
-    await saveProfiles(updated);
+  const persist = useCallback(async (updated: CustomerProfile[]) => {
+    setCustomers(updated);
+    await saveCustomers(updated);
   }, []);
 
-  function openNew() {
-    setEditingProfile(null);
-    setModalVisible(true);
-  }
+  // ── Customer CRUD ────────────────────────────────────────────────────────────
 
-  function openEdit(profile: Profile) {
-    setEditingProfile(profile);
-    setModalVisible(true);
-  }
-
-  async function handleSave(draft: ProfileDraft) {
-    if (editingProfile) {
-      const updated = profiles.map((p) =>
-        p.id === editingProfile.id ? { ...editingProfile, ...draft } : p
+  async function handleSaveCustomer(draft: CustomerDraft) {
+    if (modal.kind === "editCustomer") {
+      await persist(
+        customers.map((c) =>
+          c.id === modal.customer.id
+            ? { ...c, customerName: draft.customerName, updatedAt: nowIso() }
+            : c
+        )
       );
-      await persistAndSet(updated);
     } else {
-      const newProfile: Profile = {
-        id: Date.now().toString(),
-        createdAt: Date.now(),
-        ...draft,
+      const newCustomer: CustomerProfile = {
+        id: crypto.randomUUID(),
+        customerName: draft.customerName,
+        subProfiles: [],
+        createdAt: nowIso(),
+        updatedAt: nowIso(),
       };
-      await persistAndSet([newProfile, ...profiles]);
+      await persist([newCustomer, ...customers]);
     }
-    setModalVisible(false);
+    setModal({ kind: "none" });
   }
 
-  async function handleDelete(id: string) {
-    await persistAndSet(profiles.filter((p) => p.id !== id));
+  async function handleDeleteCustomer(customerId: string) {
+    await persist(customers.filter((c) => c.id !== customerId));
   }
 
-  const draft: ProfileDraft = editingProfile
-    ? {
-        siteName: editingProfile.siteName,
-        contactName: editingProfile.contactName,
-        phone: editingProfile.phone,
-        fiberType: editingProfile.fiberType,
-        fiberCount: editingProfile.fiberCount,
-        notes: editingProfile.notes,
-      }
-    : emptyDraft();
+  // ── SubProfile CRUD ──────────────────────────────────────────────────────────
+
+  async function handleSaveSubProfile(draft: SubProfileDraft) {
+    if (modal.kind === "editSubProfile") {
+      const { customerId, sp } = modal;
+      await persist(
+        customers.map((c) =>
+          c.id !== customerId
+            ? c
+            : {
+                ...c,
+                updatedAt: nowIso(),
+                subProfiles: c.subProfiles.map((s) =>
+                  s.id === sp.id ? { ...s, ...draft } : s
+                ),
+              }
+        )
+      );
+    } else if (modal.kind === "newSubProfile") {
+      const { customerId } = modal;
+      const newSp: SubProfile = { id: crypto.randomUUID(), ...draft };
+      await persist(
+        customers.map((c) =>
+          c.id !== customerId
+            ? c
+            : {
+                ...c,
+                updatedAt: nowIso(),
+                subProfiles: [...c.subProfiles, newSp],
+              }
+        )
+      );
+    }
+    setModal({ kind: "none" });
+  }
+
+  async function handleDeleteSubProfile(customerId: string, spId: string) {
+    await persist(
+      customers.map((c) =>
+        c.id !== customerId
+          ? c
+          : {
+              ...c,
+              updatedAt: nowIso(),
+              subProfiles: c.subProfiles.filter((s) => s.id !== spId),
+            }
+      )
+    );
+  }
+
+  // ── Derived modal props ──────────────────────────────────────────────────────
+
+  const customerModalVisible =
+    modal.kind === "newCustomer" || modal.kind === "editCustomer";
+
+  const subProfileModalVisible =
+    modal.kind === "newSubProfile" || modal.kind === "editSubProfile";
+
+  const customerDraft: CustomerDraft =
+    modal.kind === "editCustomer"
+      ? { customerName: modal.customer.customerName }
+      : emptyCustomerDraft();
+
+  const subProfileFormDraft: SubProfileFormDraft =
+    modal.kind === "editSubProfile"
+      ? subProfileToFormDraft(modal.sp)
+      : emptySubProfileFormDraft();
 
   return (
     <AppShell>
@@ -381,36 +676,56 @@ export default function ProfilesScreen() {
         options={{
           title: "Customer Profiles",
           headerRight: () => (
-            <Pressable onPress={openNew} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} className="pr-1">
-              <Text className="text-[#00FFFF] text-sm font-semibold">+ Add</Text>
+            <Pressable
+              onPress={() => setModal({ kind: "newCustomer" })}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              className="pr-1"
+            >
+              <AppText size="sm" color="accentCyan" className="font-semibold">+ Add</AppText>
             </Pressable>
           ),
         }}
       />
 
-      {profiles.length === 0 ? (
-        <EmptyState onAdd={openNew} />
+      {customers.length === 0 ? (
+        <EmptyState onAdd={() => setModal({ kind: "newCustomer" })} />
       ) : (
         <ScrollView
           className="flex-1"
           contentContainerStyle={{ paddingTop: 12, paddingBottom: 24 }}
         >
-          {profiles.map((profile) => (
-            <ProfileCard
-              key={profile.id}
-              profile={profile}
-              onEdit={() => openEdit(profile)}
-              onDelete={() => handleDelete(profile.id)}
+          {customers.map((customer) => (
+            <CustomerCard
+              key={customer.id}
+              customer={customer}
+              onRename={() => setModal({ kind: "editCustomer", customer })}
+              onDelete={() => handleDeleteCustomer(customer.id)}
+              onAddSubProfile={() =>
+                setModal({ kind: "newSubProfile", customerId: customer.id })
+              }
+              onEditSubProfile={(sp) =>
+                setModal({ kind: "editSubProfile", customerId: customer.id, sp })
+              }
+              onDeleteSubProfile={(spId) =>
+                handleDeleteSubProfile(customer.id, spId)
+              }
             />
           ))}
         </ScrollView>
       )}
 
-      <ProfileFormModal
-        visible={modalVisible}
-        initial={draft}
-        onSave={handleSave}
-        onCancel={() => setModalVisible(false)}
+      <CustomerModal
+        visible={customerModalVisible}
+        initial={customerDraft}
+        onSave={handleSaveCustomer}
+        onCancel={() => setModal({ kind: "none" })}
+      />
+
+      <SubProfileModal
+        visible={subProfileModalVisible}
+        initial={subProfileFormDraft}
+        onSave={handleSaveSubProfile}
+        onCancel={() => setModal({ kind: "none" })}
       />
     </AppShell>
   );

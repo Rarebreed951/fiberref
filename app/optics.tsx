@@ -1,6 +1,8 @@
-import { ScrollView, View, Text } from "react-native";
+import { useState } from "react";
+import { ScrollView, View, Pressable } from "react-native";
 import { Stack } from "expo-router";
 import AppShell from "../src/components/AppShell";
+import AppText from "../src/components/AppText";
 import {
   SectionCard,
   SectionHeader,
@@ -33,41 +35,57 @@ function formatReach(maxReachM: number): string {
 // ─── Form Factor Card ─────────────────────────────────────────────────────────
 
 function FormFactorCard({ ff }: { ff: TransceiverFormFactor }) {
+  const [expanded, setExpanded] = useState(false);
+
   return (
-    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] p-4">
-      <Text className="text-[#00FFFF] text-base font-bold mb-2">{ff.name}</Text>
+    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] overflow-hidden">
+      <Pressable
+        onPress={() => setExpanded((v) => !v)}
+        className="flex-row items-center px-4 py-3"
+      >
+        <AppText size="md" color="accentCyan" className="font-bold flex-1">
+          {ff.name}
+        </AppText>
+        <AppText size="xs" color="muted" style={{ marginLeft: 8 }}>
+          {expanded ? "▲" : "▼"}
+        </AppText>
+      </Pressable>
 
-      <View className="flex-row mb-3">
-        <View className="flex-1 mr-2 bg-[#111111] rounded-lg p-2 border border-[#242424]">
-          <Text className="text-[#555555] text-[10px] uppercase tracking-wider mb-0.5">
-            Lanes
-          </Text>
-          <Text className="text-white text-xs font-semibold">{ff.lanesCount}</Text>
-        </View>
-        <View className="flex-1 mr-2 bg-[#111111] rounded-lg p-2 border border-[#242424]">
-          <Text className="text-[#555555] text-[10px] uppercase tracking-wider mb-0.5">
-            Max Rate
-          </Text>
-          <Text className="text-white text-xs font-semibold">{ff.maxLineRateGbps} G</Text>
-        </View>
-        <View className="flex-1 bg-[#111111] rounded-lg p-2 border border-[#242424]">
-          <Text className="text-[#555555] text-[10px] uppercase tracking-wider mb-0.5">
-            Hot-swap
-          </Text>
-          <Text className="text-white text-xs font-semibold">
-            {ff.hotSwappable ? "Yes" : "No"}
-          </Text>
-        </View>
-      </View>
+      {expanded && (
+        <View className="px-4 pb-4 border-t border-[#2A2A2A]">
+          <View className="flex-row mt-3 mb-3">
+            <View className="flex-1 mr-2 bg-[#111111] rounded-lg p-2 border border-[#242424]">
+              <AppText size="xs" color="muted" className="uppercase tracking-wider mb-0.5">
+                Lanes
+              </AppText>
+              <AppText size="xs" color="primary" className="font-semibold">{ff.lanesCount}</AppText>
+            </View>
+            <View className="flex-1 mr-2 bg-[#111111] rounded-lg p-2 border border-[#242424]">
+              <AppText size="xs" color="muted" className="uppercase tracking-wider mb-0.5">
+                Max Rate
+              </AppText>
+              <AppText size="xs" color="primary" className="font-semibold">{ff.maxLineRateGbps} G</AppText>
+            </View>
+            <View className="flex-1 bg-[#111111] rounded-lg p-2 border border-[#242424]">
+              <AppText size="xs" color="muted" className="uppercase tracking-wider mb-0.5">
+                Hot-swap
+              </AppText>
+              <AppText size="xs" color="primary" className="font-semibold">
+                {ff.hotSwappable ? "Yes" : "No"}
+              </AppText>
+            </View>
+          </View>
 
-      <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
-        Common Rates
-      </Text>
-      <Text className="text-[#A0A0A0] text-xs mb-2">
-        {ff.commonRatesGbps.map((r) => `${r}G`).join(", ")}
-      </Text>
+          <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
+            Common Rates
+          </AppText>
+          <AppText size="xs" color="secondary" className="mb-2">
+            {ff.commonRatesGbps.map((r) => `${r}G`).join(", ")}
+          </AppText>
 
-      <Text className="text-[#A0A0A0] text-xs leading-4">{ff.notes}</Text>
+          <AppText size="xs" color="secondary" className="leading-4">{ff.notes}</AppText>
+        </View>
+      )}
     </View>
   );
 }
@@ -77,79 +95,88 @@ function FormFactorCard({ ff }: { ff: TransceiverFormFactor }) {
 function Badge({ label, color }: { label: string; color: "cyan" | "amber" }) {
   const borderColor = color === "cyan" ? "border-[#00FFFF55]" : "border-[#FFB30055]";
   const bgColor = color === "cyan" ? "bg-[#00FFFF15]" : "bg-[#FFB30015]";
-  const textColor = color === "cyan" ? "text-[#00FFFF]" : "text-[#FFB300]";
+  const appColor = color === "cyan" ? "accentCyan" : "accentAmber";
   return (
     <View className={`border rounded px-1.5 py-0.5 mr-1.5 ${borderColor} ${bgColor}`}>
-      <Text className={`text-[10px] font-semibold ${textColor}`}>{label}</Text>
+      <AppText size="xs" color={appColor} className="font-semibold">{label}</AppText>
     </View>
   );
 }
 
 function TransceiverCard({ spec }: { spec: TransceiverSpec }) {
+  const [expanded, setExpanded] = useState(false);
   const powerBudgetDb =
     Math.round((spec.txPowerDbmMin - spec.rxSensitivityDbm) * 10) / 10;
 
   return (
-    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] p-4">
-      {/* Header */}
-      <Text className="text-[#00FFFF] text-base font-bold mb-0.5">{spec.protocol}</Text>
-      <Text className="text-[#555555] text-xs mb-2">{spec.lineRateGbps} Gbps</Text>
+    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] overflow-hidden">
+      {/* Collapsed header */}
+      <Pressable onPress={() => setExpanded((v) => !v)} className="px-4 py-3">
+        <View className="flex-row items-center">
+          <View className="flex-row items-center flex-1 flex-wrap gap-2 mr-2">
+            <AppText size="md" color="accentCyan" className="font-bold">
+              {spec.protocol}
+            </AppText>
+            <AppText size="xs" color="muted">{spec.lineRateGbps} Gbps</AppText>
+            {spec.isBidi && <Badge label="BiDi" color="amber" />}
+            {spec.isWdm && <Badge label="WDM" color="cyan" />}
+          </View>
+          <AppText size="xs" color="muted">{expanded ? "▲" : "▼"}</AppText>
+        </View>
+      </Pressable>
 
-      {/* Badges */}
-      {(spec.isBidi || spec.isWdm) && (
-        <View className="flex-row mb-2">
-          {spec.isBidi && <Badge label="BiDi" color="amber" />}
-          {spec.isWdm && <Badge label="WDM" color="cyan" />}
+      {/* Expanded content */}
+      {expanded && (
+        <View className="px-4 pb-4 border-t border-[#2A2A2A]">
+          {/* Spec block */}
+          <View className="bg-[#111111] rounded-lg p-2 border border-[#242424] mb-3 mt-3">
+            <View className="flex-row mb-1">
+              <AppText size="xs" color="muted" className="w-28">Wavelength</AppText>
+              <AppText size="xs" color="primary" className="flex-1">
+                {formatWavelength(spec.wavelengthNm)}
+              </AppText>
+            </View>
+            <View className="flex-row mb-1">
+              <AppText size="xs" color="muted" className="w-28">Connector</AppText>
+              <AppText size="xs" color="primary" className="flex-1">{spec.connectorType}</AppText>
+            </View>
+            <View className="flex-row mb-1">
+              <AppText size="xs" color="muted" className="w-28">Fiber types</AppText>
+              <AppText size="xs" color="primary" className="flex-1">{spec.fiberTypes.join(", ")}</AppText>
+            </View>
+            <View className="flex-row mb-1">
+              <AppText size="xs" color="muted" className="w-28">Max reach</AppText>
+              <AppText size="xs" color="primary" className="flex-1">{formatReach(spec.maxReachM)}</AppText>
+            </View>
+            <Divider />
+            <View className="flex-row mt-1 mb-1">
+              <AppText size="xs" color="muted" className="w-28">TX power</AppText>
+              <AppText size="xs" color="secondary" className="flex-1">
+                {spec.txPowerDbmMin} to {spec.txPowerDbmMax} dBm
+              </AppText>
+            </View>
+            <View className="flex-row mb-1">
+              <AppText size="xs" color="muted" className="w-28">RX sensitivity</AppText>
+              <AppText size="xs" color="secondary" className="flex-1">{spec.rxSensitivityDbm} dBm</AppText>
+            </View>
+            <View className="flex-row mb-1">
+              <AppText size="xs" color="muted" className="w-28">RX overload</AppText>
+              <AppText size="xs" color="secondary" className="flex-1">{spec.rxOverloadDbm} dBm</AppText>
+            </View>
+            <View className="flex-row">
+              <AppText size="xs" color="muted" className="w-28">Power budget</AppText>
+              <AppText size="xs" color="success" className="font-semibold flex-1">
+                {powerBudgetDb} dB
+              </AppText>
+            </View>
+          </View>
+
+          {/* Field notes */}
+          <AppText size="xs" color="secondary" className="leading-4">{spec.fieldNotes}</AppText>
+
+          {spec.nerdStuff && <NerdStuffSection nerd={spec.nerdStuff as NerdStuff} />}
         </View>
       )}
-
-      {/* Spec block */}
-      <View className="bg-[#111111] rounded-lg p-2 border border-[#242424] mb-3">
-        <View className="flex-row mb-1">
-          <Text className="text-[#555555] text-xs w-28">Wavelength</Text>
-          <Text className="text-white text-xs flex-1">
-            {formatWavelength(spec.wavelengthNm)}
-          </Text>
-        </View>
-        <View className="flex-row mb-1">
-          <Text className="text-[#555555] text-xs w-28">Connector</Text>
-          <Text className="text-white text-xs flex-1">{spec.connectorType}</Text>
-        </View>
-        <View className="flex-row mb-1">
-          <Text className="text-[#555555] text-xs w-28">Fiber types</Text>
-          <Text className="text-white text-xs flex-1">{spec.fiberTypes.join(", ")}</Text>
-        </View>
-        <View className="flex-row mb-1">
-          <Text className="text-[#555555] text-xs w-28">Max reach</Text>
-          <Text className="text-white text-xs flex-1">{formatReach(spec.maxReachM)}</Text>
-        </View>
-        <Divider />
-        <View className="flex-row mt-1 mb-1">
-          <Text className="text-[#555555] text-xs w-28">TX power</Text>
-          <Text className="text-[#A0A0A0] text-xs flex-1">
-            {spec.txPowerDbmMin} to {spec.txPowerDbmMax} dBm
-          </Text>
-        </View>
-        <View className="flex-row mb-1">
-          <Text className="text-[#555555] text-xs w-28">RX sensitivity</Text>
-          <Text className="text-[#A0A0A0] text-xs flex-1">{spec.rxSensitivityDbm} dBm</Text>
-        </View>
-        <View className="flex-row mb-1">
-          <Text className="text-[#555555] text-xs w-28">RX overload</Text>
-          <Text className="text-[#A0A0A0] text-xs flex-1">{spec.rxOverloadDbm} dBm</Text>
-        </View>
-        <View className="flex-row">
-          <Text className="text-[#555555] text-xs w-28">Power budget</Text>
-          <Text className="text-[#00FF88] text-xs font-semibold flex-1">
-            {powerBudgetDb} dB
-          </Text>
-        </View>
-      </View>
-
-      {/* Field notes */}
-      <Text className="text-[#A0A0A0] text-xs leading-4">{spec.fieldNotes}</Text>
-
-      {spec.nerdStuff && <NerdStuffSection nerd={spec.nerdStuff as NerdStuff} />}
     </View>
   );
 }
@@ -178,11 +205,11 @@ function TransceiverGroup({
 
 function GeneralFieldNotes({ notes }: { notes: string[] }) {
   return (
-    <SectionCard title="General Field Notes">
+    <SectionCard title="General Field Notes" collapsible defaultOpen={false}>
       {notes.map((note, i) => (
         <View key={i} className="flex-row mb-2.5">
-          <Text className="text-[#00FFFF] text-xs font-bold w-5">{i + 1}.</Text>
-          <Text className="text-[#A0A0A0] text-xs flex-1 leading-4">{note}</Text>
+          <AppText size="xs" color="accentCyan" className="font-bold w-5">{i + 1}.</AppText>
+          <AppText size="xs" color="secondary" className="flex-1 leading-4">{note}</AppText>
         </View>
       ))}
     </SectionCard>

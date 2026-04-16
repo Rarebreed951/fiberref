@@ -1,6 +1,8 @@
-import { ScrollView, View, Text } from "react-native";
+import { useState } from "react";
+import { ScrollView, View, Pressable } from "react-native";
 import { Stack } from "expo-router";
 import AppShell from "../src/components/AppShell";
+import AppText from "../src/components/AppText";
 import {
   SectionCard,
   SectionHeader,
@@ -28,68 +30,82 @@ function ConnectorIncludedBadge({ included, label }: { included: boolean; label:
           : "border-[#44444455] bg-[#44444415]"
       }`}
     >
-      <Text
-        className={`text-[10px] font-semibold ${
-          included ? "text-[#00FF88]" : "text-[#555555]"
-        }`}
+      <AppText
+        size="xs"
+        color={included ? "success" : "muted"}
+        className="font-semibold"
       >
         {label} {included ? "included" : "excluded"}
-      </Text>
+      </AppText>
     </View>
   );
 }
 
 function TestMethodCard({ method }: { method: IOLMTestMethod }) {
+  const [expanded, setExpanded] = useState(false);
+
   return (
-    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] p-4">
-      {/* Header */}
-      <Text className="text-[#00FFFF] text-base font-bold mb-1">{method.name}</Text>
-      <View className="flex-row flex-wrap mb-2">
-        {method.standardRefs.map((ref) => (
-          <View key={ref} className="border border-[#2A2A2A] rounded px-1.5 py-0.5 mr-1.5 mb-1">
-            <Text className="text-[#555555] text-[10px]">{ref}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* What it measures */}
-      <View className="bg-[#111111] rounded-lg p-2 border border-[#242424] mb-3">
-        <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
-          What It Measures
-        </Text>
-        <Text className="text-[#A0A0A0] text-xs leading-4">{method.whatItMeasures}</Text>
-      </View>
-
-      {/* Connector inclusion */}
-      <View className="flex-row mb-3">
-        <ConnectorIncludedBadge included={method.includesNearEndConnector} label="Near-end connector" />
-        <ConnectorIncludedBadge included={method.includesFarEndConnector} label="Far-end connector" />
-      </View>
-
-      {/* Reference setup */}
-      <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1.5">
-        Reference Setup Steps
-      </Text>
-      {method.referenceSetupSteps.map((step, i) => (
-        <View key={i} className="flex-row mb-1.5">
-          <Text className="text-[#00FFFF] text-xs font-bold w-5">{i + 1}.</Text>
-          <Text className="text-[#A0A0A0] text-xs flex-1 leading-4">{step}</Text>
+    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] overflow-hidden">
+      {/* Collapsed header */}
+      <Pressable onPress={() => setExpanded((v) => !v)} className="px-4 py-3">
+        <View className="flex-row items-center">
+          <AppText size="md" color="accentCyan" className="font-bold flex-1 mr-2">
+            {method.name}
+          </AppText>
+          <AppText size="xs" color="muted">{expanded ? "▲" : "▼"}</AppText>
         </View>
-      ))}
+        <View className="flex-row flex-wrap mt-1.5">
+          {method.standardRefs.map((ref) => (
+            <View key={ref} className="border border-[#2A2A2A] rounded px-1.5 py-0.5 mr-1.5 mb-1">
+              <AppText size="xs" color="muted">{ref}</AppText>
+            </View>
+          ))}
+        </View>
+      </Pressable>
 
-      {/* Use case & field notes */}
-      <View className="mt-2">
-        <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
-          Primary Use Case
-        </Text>
-        <Text className="text-[#A0A0A0] text-xs leading-4 mb-2">{method.primaryUseCase}</Text>
-        <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
-          Field Notes
-        </Text>
-        <Text className="text-[#A0A0A0] text-xs leading-4">{method.fieldNotes}</Text>
-      </View>
+      {/* Expanded content */}
+      {expanded && (
+        <View className="px-4 pb-4 border-t border-[#2A2A2A]">
+          {/* What it measures */}
+          <View className="bg-[#111111] rounded-lg p-2 border border-[#242424] mb-3 mt-3">
+            <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
+              What It Measures
+            </AppText>
+            <AppText size="xs" color="secondary" className="leading-4">{method.whatItMeasures}</AppText>
+          </View>
 
-      {method.nerdStuff && <NerdStuffSection nerd={method.nerdStuff as NerdStuff} />}
+          {/* Connector inclusion */}
+          <View className="flex-row mb-3">
+            <ConnectorIncludedBadge included={method.includesNearEndConnector} label="Near-end connector" />
+            <ConnectorIncludedBadge included={method.includesFarEndConnector} label="Far-end connector" />
+          </View>
+
+          {/* Reference setup */}
+          <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1.5">
+            Reference Setup Steps
+          </AppText>
+          {method.referenceSetupSteps.map((step, i) => (
+            <View key={i} className="flex-row mb-1.5">
+              <AppText size="xs" color="accentCyan" className="font-bold w-5">{i + 1}.</AppText>
+              <AppText size="xs" color="secondary" className="flex-1 leading-4">{step}</AppText>
+            </View>
+          ))}
+
+          {/* Use case & field notes */}
+          <View className="mt-2">
+            <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
+              Primary Use Case
+            </AppText>
+            <AppText size="xs" color="secondary" className="leading-4 mb-2">{method.primaryUseCase}</AppText>
+            <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
+              Field Notes
+            </AppText>
+            <AppText size="xs" color="secondary" className="leading-4">{method.fieldNotes}</AppText>
+          </View>
+
+          {method.nerdStuff && <NerdStuffSection nerd={method.nerdStuff as NerdStuff} />}
+        </View>
+      )}
     </View>
   );
 }
@@ -102,22 +118,22 @@ function LossThresholdTable({ thresholds }: { thresholds: LossThreshold[] }) {
       {thresholds.map((t, index) => (
         <View key={t.component}>
           <View className="py-2">
-            <Text className="text-white text-xs font-semibold mb-1">{t.component}</Text>
+            <AppText size="xs" color="primary" className="font-semibold mb-1">{t.component}</AppText>
             <View className="flex-row mb-0.5">
-              <Text className="text-[#555555] text-xs w-28">Max (spec)</Text>
-              <Text className="text-[#FF4444] text-xs font-bold">≤ {t.maxLossdB} dB</Text>
+              <AppText size="xs" color="muted" className="w-28">Max (spec)</AppText>
+              <AppText size="xs" color="danger" className="font-bold">≤ {t.maxLossdB} dB</AppText>
             </View>
             {t.typicalGooddB != null && (
               <View className="flex-row mb-0.5">
-                <Text className="text-[#555555] text-xs w-28">Typical good</Text>
-                <Text className="text-[#00FF88] text-xs">{t.typicalGooddB} dB</Text>
+                <AppText size="xs" color="muted" className="w-28">Typical good</AppText>
+                <AppText size="xs" color="success">{t.typicalGooddB} dB</AppText>
               </View>
             )}
             <View className="flex-row mb-1">
-              <Text className="text-[#555555] text-xs w-28">Standard</Text>
-              <Text className="text-[#A0A0A0] text-xs flex-1">{t.standard}</Text>
+              <AppText size="xs" color="muted" className="w-28">Standard</AppText>
+              <AppText size="xs" color="secondary" className="flex-1">{t.standard}</AppText>
             </View>
-            <Text className="text-[#555555] text-[10px] leading-4 italic">{t.notes}</Text>
+            <AppText size="xs" color="muted" className="leading-4 italic">{t.notes}</AppText>
           </View>
           {index < thresholds.length - 1 && <Divider />}
         </View>
@@ -135,14 +151,14 @@ function ORLTable({ requirements }: { requirements: ORLRequirement[] }) {
         <View key={req.applicationContext}>
           <View className="py-2">
             <View className="flex-row items-baseline mb-1">
-              <Text className="text-white text-xs font-semibold flex-1 mr-2">
+              <AppText size="xs" color="primary" className="font-semibold flex-1 mr-2">
                 {req.applicationContext}
-              </Text>
-              <Text className="text-[#00FFFF] text-sm font-bold">
+              </AppText>
+              <AppText size="sm" color="accentCyan" className="font-bold">
                 ≥ {req.minORLdB} dB
-              </Text>
+              </AppText>
             </View>
-            <Text className="text-[#555555] text-[10px] leading-4 italic">{req.notes}</Text>
+            <AppText size="xs" color="muted" className="leading-4 italic">{req.notes}</AppText>
           </View>
           {index < requirements.length - 1 && <Divider />}
         </View>
@@ -160,23 +176,23 @@ function WavelengthRows({ items }: { items: WavelengthTestRequirement[] }) {
         <View key={row.wavelengthNm}>
           <View className="py-2">
             <View className="flex-row items-center mb-1">
-              <Text className="text-[#00FFFF] text-sm font-bold mr-2">
+              <AppText size="sm" color="accentCyan" className="font-bold mr-2">
                 {row.wavelengthNm} nm
-              </Text>
-              <Text className="text-[#555555] text-[10px]">{row.standard}</Text>
+              </AppText>
+              <AppText size="xs" color="muted">{row.standard}</AppText>
             </View>
-            <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
+            <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
               Required For
-            </Text>
+            </AppText>
             {row.requiredFor.map((use) => (
               <View key={use} className="flex-row mb-0.5">
-                <Text className="text-[#555555] text-xs mr-1.5">·</Text>
-                <Text className="text-[#A0A0A0] text-xs flex-1">{use}</Text>
+                <AppText size="xs" color="muted" className="mr-1.5">·</AppText>
+                <AppText size="xs" color="secondary" className="flex-1">{use}</AppText>
               </View>
             ))}
-            <Text className="text-[#555555] text-[10px] leading-4 italic mt-1">
+            <AppText size="xs" color="muted" className="leading-4 italic mt-1">
               {row.notes}
-            </Text>
+            </AppText>
           </View>
           {index < items.length - 1 && <Divider />}
         </View>
@@ -191,14 +207,14 @@ function WavelengthRequirementTable({ rows }: { rows: WavelengthTestRequirement[
 
   return (
     <>
-      <Text className="text-[#FFB300] text-xs font-semibold mb-1">
+      <AppText size="xs" color="accentAmber" className="font-semibold mb-1">
         Single-Mode Fiber (SMF)
-      </Text>
+      </AppText>
       <WavelengthRows items={smf} />
       <View className="h-3" />
-      <Text className="text-[#FFB300] text-xs font-semibold mb-1">
+      <AppText size="xs" color="accentAmber" className="font-semibold mb-1">
         Multimode Fiber (MMF)
-      </Text>
+      </AppText>
       <WavelengthRows items={mmf} />
     </>
   );
@@ -208,11 +224,11 @@ function WavelengthRequirementTable({ rows }: { rows: WavelengthTestRequirement[
 
 function FieldNotesCard({ notes }: { notes: string[] }) {
   return (
-    <SectionCard title="Field Notes">
+    <SectionCard title="Field Notes" collapsible defaultOpen={false}>
       {notes.map((note, i) => (
         <View key={i} className="flex-row mb-2.5">
-          <Text className="text-[#00FFFF] text-xs font-bold w-5">{i + 1}.</Text>
-          <Text className="text-[#A0A0A0] text-xs flex-1 leading-4">{note}</Text>
+          <AppText size="xs" color="accentCyan" className="font-bold w-5">{i + 1}.</AppText>
+          <AppText size="xs" color="secondary" className="flex-1 leading-4">{note}</AppText>
         </View>
       ))}
     </SectionCard>
@@ -241,19 +257,19 @@ export default function IolmScreen() {
 
         {/* Loss Thresholds */}
         <SectionHeader title="Loss Thresholds" />
-        <SectionCard title="Component Loss Limits">
+        <SectionCard title="Component Loss Limits" collapsible defaultOpen={false}>
           <LossThresholdTable thresholds={iolmData.lossThresholds as LossThreshold[]} />
         </SectionCard>
 
         {/* ORL */}
         <SectionHeader title="ORL Requirements" />
-        <SectionCard title="Optical Return Loss by Application">
+        <SectionCard title="Optical Return Loss by Application" collapsible defaultOpen={false}>
           <ORLTable requirements={iolmData.orlRequirements as ORLRequirement[]} />
         </SectionCard>
 
         {/* Wavelength Requirements */}
         <SectionHeader title="Wavelength Requirements" />
-        <SectionCard title="Test Wavelengths by Fiber Type">
+        <SectionCard title="Test Wavelengths by Fiber Type" collapsible defaultOpen={false}>
           <WavelengthRequirementTable
             rows={iolmData.wavelengthTestRequirements as WavelengthTestRequirement[]}
           />
