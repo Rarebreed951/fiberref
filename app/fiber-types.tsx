@@ -1,6 +1,8 @@
-import { ScrollView, View, Text } from "react-native";
+import { useState } from "react";
+import { ScrollView, View, Pressable } from "react-native";
 import { Stack } from "expo-router";
 import AppShell from "../src/components/AppShell";
+import AppText from "../src/components/AppText";
 import {
   SectionHeader,
   SpecRow,
@@ -13,84 +15,91 @@ import type { NerdStuff } from "../src/types/shared";
 // ─── Fiber Card ───────────────────────────────────────────────────────────────
 
 function FiberCard({ fiber }: { fiber: FiberTypeSpec }) {
+  const [expanded, setExpanded] = useState(false);
   const isSingleMode = fiber.category === "single-mode";
 
   return (
-    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] p-4">
-      {/* Header */}
-      <View className="flex-row items-start mb-2">
-        <View className="flex-1">
-          <View className="flex-row items-center flex-wrap gap-2 mb-0.5">
-            <Text className="text-[#00FFFF] text-base font-bold">
+    <View className="mx-3 mb-3 bg-[#1A1A1A] rounded-xl border border-[#2A2A2A] overflow-hidden">
+      {/* Collapsed header */}
+      <Pressable onPress={() => setExpanded((v) => !v)} className="px-4 py-3">
+        <View className="flex-row items-center">
+          <View className="flex-row items-center flex-wrap flex-1 gap-2 mr-2">
+            <AppText size="md" color="accentCyan" className="font-bold">
               {fiber.ituDesignation}
-            </Text>
+            </AppText>
             {fiber.tiaDesignation && (
               <View className="bg-[#00FFFF20] border border-[#00FFFF55] rounded px-1.5 py-0.5">
-                <Text className="text-[#00FFFF] text-[10px] font-semibold">
+                <AppText size="xs" color="accentCyan" className="font-semibold">
                   {fiber.tiaDesignation}
-                </Text>
+                </AppText>
               </View>
             )}
             {!fiber.activelyInstalled && (
               <View className="bg-[#FFB30020] border border-[#FFB300] rounded px-1.5 py-0.5">
-                <Text className="text-[#FFB300] text-[10px] font-semibold">LEGACY</Text>
+                <AppText size="xs" color="accentAmber" className="font-semibold">LEGACY</AppText>
               </View>
             )}
           </View>
-          <Text className="text-[#A0A0A0] text-xs">
-            {fiber.commonNames.join(" · ")}
-          </Text>
+          <AppText size="xs" color="muted">{expanded ? "▲" : "▼"}</AppText>
         </View>
-      </View>
+        <AppText size="xs" color="secondary" className="mt-0.5">
+          {fiber.commonNames.join(" · ")}
+        </AppText>
+      </Pressable>
 
-      {/* Specs */}
-      <View className="mb-3">
-        <SpecRow
-          label="Core / Cladding"
-          value={`${fiber.coreDiameterMicron} / ${fiber.claddingDiameterMicron} µm`}
-        />
-        {isSingleMode && fiber.mfdAt1310nmMicron != null && (
-          <SpecRow label="MFD @ 1310 nm" value={`${fiber.mfdAt1310nmMicron} µm`} />
-        )}
-        {isSingleMode && fiber.mfdAt1550nmMicron != null && (
-          <SpecRow label="MFD @ 1550 nm" value={`${fiber.mfdAt1550nmMicron} µm`} />
-        )}
-        {!isSingleMode && fiber.na != null && (
-          <SpecRow label="Numerical Aperture" value={fiber.na.toFixed(3)} />
-        )}
-        {fiber.attenuationAt1310nmMax != null && (
-          <SpecRow
-            label="Atten. @ 1310 nm"
-            value={`≤ ${fiber.attenuationAt1310nmMax} dB/km`}
-          />
-        )}
-        {fiber.attenuationAt1550nmMax != null && (
-          <SpecRow
-            label="Atten. @ 1550 nm"
-            value={`≤ ${fiber.attenuationAt1550nmMax} dB/km`}
-          />
-        )}
-        <SpecRow label="Min. Bend Radius" value={`${fiber.minBendRadiusMm} mm`} />
-      </View>
+      {/* Expanded content */}
+      {expanded && (
+        <View className="px-4 pb-4 border-t border-[#2A2A2A]">
+          {/* Specs */}
+          <View className="mt-2 mb-3">
+            <SpecRow
+              label="Core / Cladding"
+              value={`${fiber.coreDiameterMicron} / ${fiber.claddingDiameterMicron} µm`}
+            />
+            {isSingleMode && fiber.mfdAt1310nmMicron != null && (
+              <SpecRow label="MFD @ 1310 nm" value={`${fiber.mfdAt1310nmMicron} µm`} />
+            )}
+            {isSingleMode && fiber.mfdAt1550nmMicron != null && (
+              <SpecRow label="MFD @ 1550 nm" value={`${fiber.mfdAt1550nmMicron} µm`} />
+            )}
+            {!isSingleMode && fiber.na != null && (
+              <SpecRow label="Numerical Aperture" value={fiber.na.toFixed(3)} />
+            )}
+            {fiber.attenuationAt1310nmMax != null && (
+              <SpecRow
+                label="Atten. @ 1310 nm"
+                value={`≤ ${fiber.attenuationAt1310nmMax} dB/km`}
+              />
+            )}
+            {fiber.attenuationAt1550nmMax != null && (
+              <SpecRow
+                label="Atten. @ 1550 nm"
+                value={`≤ ${fiber.attenuationAt1550nmMax} dB/km`}
+              />
+            )}
+            <SpecRow label="Min. Bend Radius" value={`${fiber.minBendRadiusMm} mm`} />
+          </View>
 
-      {/* Use case */}
-      <Text className="text-[#A0A0A0] text-xs leading-4 mb-2">
-        {fiber.primaryUseCase}
-      </Text>
+          {/* Use case */}
+          <AppText size="xs" color="secondary" className="leading-4 mb-2">
+            {fiber.primaryUseCase}
+          </AppText>
 
-      {/* Compatibility */}
-      <View className="bg-[#111111] rounded-lg p-2 border border-[#242424]">
-        <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-1">
-          Compatibility
-        </Text>
-        <Text className="text-[#A0A0A0] text-xs leading-4">
-          {fiber.compatibilityNotes}
-        </Text>
-      </View>
+          {/* Compatibility */}
+          <View className="bg-[#111111] rounded-lg p-2 border border-[#242424]">
+            <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-1">
+              Compatibility
+            </AppText>
+            <AppText size="xs" color="secondary" className="leading-4">
+              {fiber.compatibilityNotes}
+            </AppText>
+          </View>
 
-      {/* Nerd Stuff */}
-      {fiber.nerdStuff && (
-        <NerdStuffSection nerd={fiber.nerdStuff as NerdStuff} />
+          {/* Nerd Stuff */}
+          {fiber.nerdStuff && (
+            <NerdStuffSection nerd={fiber.nerdStuff as NerdStuff} />
+          )}
+        </View>
       )}
     </View>
   );

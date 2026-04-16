@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-04-08",
+  "lastUpdated": "2026-04-15",
 
   "enclosureTypes": [
     {
@@ -7,21 +7,21 @@
       "name": "Dome Closure",
       "commonAliases": ["Butt Closure", "Torpedo Closure", "Oval Closure", "Dome Splice Case"],
       "mountingEnvironments": ["buried", "direct buried", "aerial", "underground vault", "pedestal"],
-      "spliceCapacityRange": "24–576 splices",
-      "maxFiberCountRange": "24–864 fibers",
+      "spliceCapacityRange": "48–1728 single-fiber splices",
+      "maxFiberCountRange": "48–3456 fibers (ribbon)",
       "keyFeatures": [
         "Cylindrical or dome-shaped body with removable end cap",
-        "Gel or mechanical (compression) cable port sealing",
-        "Multiple fiber entry ports (8–24 ports typical)",
+        "Gel or mechanical (compression or wedge) cable port sealing",
+        "Multiple fiber entry ports (4–8 ports typical)",
         "Re-enterable without special tooling in most models",
         "Stackable splice trays — easy to add capacity within the same closure",
         "Accepts both loose-tube and tight-buffer cable types"
       ],
-      "fieldNotes": "The most common OSP splice closure type. Suited for all installation environments. Gel-sealed versions are preferred for direct buried and high-water-table locations. Mechanical-seal versions are cleaner for re-entry in vault and aerial work. Before ordering, size to cable count plus 20% spare tray capacity for future splices — undersized closures are a common field problem.",
+      "fieldNotes": "The most common OSP splice closure type. Suited for all installation environments. Gel-sealed versions are preferred for direct buried and high-water-table locations. Mechanical-seal and wedge-seal versions are cleaner for re-entry in vault and aerial work. Before ordering, size to cable count plus 20% spare tray capacity for future splices — undersized closures are a common field problem.",
       "nerdStuff": {
-        "title": "Gel vs. Mechanical Sealing",
+        "title": "Gel vs. Mechanical vs. Wedge Sealing",
         "formulas": [],
-        "explanation": "Gel-sealed domes use a petroleum-based gel that fills all air gaps and cable entry points. Gel provides excellent moisture protection over decades but complicates re-entry (messy, cold-weather gel hardens) and may require a gel-cleaning kit. Mechanical-seal domes use compression fittings and O-rings — clean re-entry and proper torque on all ports is required for a valid seal. In high-water-table and direct-buried applications, gel sealing is preferred. For aerial and vault installations where maintenance re-entry is expected, mechanical sealing is more practical."
+        "explanation": "Gel-sealed domes (FOSC-450 series) use a petroleum-based gel that fills all air gaps and cable entry points. Gel provides excellent moisture protection over decades but complicates re-entry (messy, cold-weather gel hardens) and may require a gel-cleaning kit. Mechanical-seal domes use compression fittings and O-rings — clean re-entry and proper torque on all ports is required for a valid seal. Wedge-seal systems (AFL Apex) use a tool-free push-to-lock wedge design — no gel, no heat shrink, no adhesives. Wedge sealing is the fastest for re-entry and is the current best practice for new installations where repeated access is expected."
       }
     },
     {
@@ -106,96 +106,97 @@
 
   "brands": [
     {
-      "id": "corning",
-      "manufacturer": "Corning Cable Systems",
+      "id": "commscope",
+      "manufacturer": "CommScope (FOSC / FIST Series)",
       "notableModels": [
         {
-          "modelName": "FOSC-450 D",
-          "enclosureTypeId": "dome",
-          "maxSpliceTrays": 12,
-          "maxFibers": 216,
-          "environments": ["buried", "direct buried", "aerial", "underground vault"],
-          "notes": "The most commonly encountered dome closure in North American OSP. Accepts 450-series splice trays. Available in gel-sealed and mechanical-seal versions. Extremely widely stocked by OSP contractors."
-        },
-        {
-          "modelName": "FOSC-400 A/B",
+          "modelName": "FOSC-450D",
           "enclosureTypeId": "dome",
           "maxSpliceTrays": 8,
-          "maxFibers": 96,
-          "environments": ["buried", "aerial", "direct buried"],
-          "notes": "Smaller dome for access network taps and distribution splice points. 400A is the original; 400B is the updated variant. Common on older installed plant."
+          "maxFibers": 3456,
+          "environments": ["buried", "direct buried", "aerial", "underground vault"],
+          "notes": "The most commonly encountered dome closure in North American OSP — often called the 'Corning 450' in the field due to historical association with Siecor/Corning Cable Systems, but manufactured by CommScope (acquired from TE Connectivity/Raychem). D is the largest variant: 30\" long × 11.5\" diameter, 6 gel-sealed cable ports. Capacity: 768 single-fiber splices (with standard splice array trays) or 1728 fibers (standard 12-fiber ribbon) or 3456 fibers (rollable ribbon). The current industry workhorse for large-count feeder and backbone splices."
         },
         {
-          "modelName": "CDB-600",
-          "enclosureTypeId": "rack-mount",
-          "maxSpliceTrays": 24,
+          "modelName": "FOSC-450C",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 6,
+          "maxFibers": 1152,
+          "environments": ["buried", "direct buried", "aerial", "underground vault"],
+          "notes": "Mid-size variant: 23\" long, 6 gel-sealed cable ports. Capacity: 288 single-fiber splices or 864 fibers (standard ribbon) or 1152 fibers (rollable ribbon). Common on distribution splices where the D model would be oversized."
+        },
+        {
+          "modelName": "FOSC-450B",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 4,
           "maxFibers": 576,
-          "environments": ["central office", "equipment room"],
-          "notes": "High-capacity central office distribution box. Modular tray system supports incremental population."
+          "environments": ["buried", "aerial", "direct buried"],
+          "notes": "Compact variant for access network tap-off and distribution splice points. Capacity: 144 single-fiber splices or 288–576 fibers (ribbon). Commonly found at feeder cable breakout points in residential OSP."
+        },
+        {
+          "modelName": "FIST-GCO2",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 4,
+          "maxFibers": 144,
+          "environments": ["buried", "aerial", "underground vault", "building interior"],
+          "notes": "CommScope's FIST® trademarked closure line (not to be confused with AFL's FIST cable technology). Uses a UMS (Universal Modular System) tray design. GCO2 is available in round (B-series) and flat (F-series) body styles. Capacity up to 144 splices depending on configuration. Often specified for building entry and vault applications where the FOSC form factor is not needed."
         }
       ],
-      "notes": "Corning products are the de facto standard in North American OSP. The 450-series ecosystem (closure, trays, hardware, splice sleeves) is the most commonly encountered system in field work. When in doubt about tray compatibility, verify the closure series before ordering replacement trays."
+      "notes": "CommScope owns the FOSC and FIST® product lines in North American OSP. The FOSC-450 series (originally Raychem, later Tyco Electronics/TE Connectivity) is the dominant gel-sealed dome closure in North America and is widely stocked by OSP contractors. Note: In the field, the FOSC-450 is frequently called a 'Corning closure' due to the historical Siecor/Corning Cable Systems connection — but the correct ordering source is CommScope. Always verify the 450-series tray part number before ordering replacements; tray incompatibility between closure variants is a common field procurement error."
     },
     {
       "id": "afl",
-      "manufacturer": "AFL (Fujikura)",
+      "manufacturer": "AFL (Apex Series)",
       "notableModels": [
         {
-          "modelName": "FIST-SC2B",
+          "modelName": "Apex X-2",
           "enclosureTypeId": "dome",
           "maxSpliceTrays": 6,
-          "maxFibers": 144,
+          "maxFibers": 3456,
           "environments": ["buried", "direct buried", "aerial", "underground vault"],
-          "notes": "Very common dome closure specified by major US Tier 1 carriers. Mechanical seal design for clean re-entry. Compatible with standard AFL 12-splice trays."
+          "notes": "AFL's mid-size OSP dome closure. 25\" × 12\" dimensions, 6 cable ports. Capacity: 576 single-fiber splices (standard trays) or 1152 fibers (standard 12-fiber ribbon) or 3456 fibers (SpiderWeb Ribbon / rollable ribbon). Uses AFL's wedge-based sealing system — no gel, no heat shrink, no adhesives. Tool-free re-entry. Widely specified by US Tier 1 carriers."
         },
         {
-          "modelName": "FIST-GC2",
-          "enclosureTypeId": "dome",
-          "maxSpliceTrays": 12,
-          "maxFibers": 288,
-          "environments": ["buried", "direct buried", "underground vault"],
-          "notes": "Larger FIST series dome with gel seal. Preferred for direct buried and high-moisture vault environments. Requires gel-removal kit for re-entry."
-        }
-      ],
-      "notes": "AFL closures are specified by several major US carriers. The FIST series is well-regarded for field re-enterability and splice tray quality. AFL also manufactures fusion splicers (Fujikura-branded) — common to see AFL closures used alongside AFL splicers on the same carrier projects."
-    },
-    {
-      "id": "commscope",
-      "manufacturer": "CommScope",
-      "notableModels": [
-        {
-          "modelName": "ADP-1040",
+          "modelName": "Apex X-3",
           "enclosureTypeId": "dome",
           "maxSpliceTrays": 8,
-          "maxFibers": 192,
-          "environments": ["buried", "aerial", "underground vault"],
-          "notes": "Standard CommScope dome for distribution and feeder OSP. Used by carriers deploying CommScope end-to-end infrastructure."
+          "maxFibers": 5148,
+          "environments": ["buried", "direct buried", "underground vault"],
+          "notes": "AFL's high-capacity OSP dome closure. Capacity: 864 single-fiber splices (standard trays) or 1296 fibers (standard 12-fiber ribbon) or 5148 fibers (SpiderWeb Ribbon / rollable ribbon). Same wedge-sealing system as X-2. Preferred for large-count feeder and backbone splice points where ribbon cable is in use."
         },
         {
-          "modelName": "LightPath Aerial",
-          "enclosureTypeId": "inline-horizontal",
-          "maxSpliceTrays": 6,
-          "maxFibers": 144,
-          "environments": ["aerial", "lashed aerial"],
-          "notes": "Inline aerial closure for mid-span splicing on lashed cable plant. Strand-mount hardware included."
+          "modelName": "Apex X-1",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 4,
+          "maxFibers": 864,
+          "environments": ["buried", "aerial", "direct buried", "underground vault"],
+          "notes": "AFL's compact OSP dome closure. Capacity: 144 single-fiber splices (standard trays) or 432 fibers (standard ribbon) or 864 fibers (rollable ribbon). Common for distribution tap-off and access splice points."
         }
       ],
-      "notes": "CommScope is a major presence in FTTH, enterprise, and carrier OSP. Their product line spans closures, FDHs, and rack systems, making them common on projects where the customer wants a single-vendor infrastructure solution."
+      "notes": "AFL (American Fiber Systems, affiliated with Fujikura) closures are specified by several major US carriers. The Apex series is the current product line for OSP dome closures. Note: AFL also uses 'FIST' as an acronym for their Fiber-in-Steel-Tube cable technology — this is completely separate from CommScope's FIST® closure product line. Do not confuse the two. AFL also manufactures fusion splicers under the Fujikura brand — common to see Apex closures used alongside Fujikura splicers on the same carrier projects."
     },
     {
       "id": "plp",
       "manufacturer": "Preformed Line Products (PLP)",
       "notableModels": [
         {
-          "modelName": "Coyote Closure",
+          "modelName": "Coyote Classic",
           "enclosureTypeId": "dome",
-          "maxSpliceTrays": 8,
-          "maxFibers": 192,
+          "maxSpliceTrays": 4,
+          "maxFibers": 576,
           "environments": ["aerial", "buried", "direct buried", "underground vault"],
-          "notes": "Widely used by Tier 1 and Tier 2 carriers across all installation environments. Known for robust sealing and straightforward field re-entry. One of the most common non-Corning domes encountered in North American OSP."
+          "notes": "PLP's standard dome closure for distribution OSP. Capacity: up to 288 single-fiber splices or 576 fibers (ribbon configuration). Known for robust sealing and straightforward field re-entry. One of the most common non-FOSC domes in North American OSP plant."
+        },
+        {
+          "modelName": "Coyote HD",
+          "enclosureTypeId": "dome",
+          "maxSpliceTrays": 12,
+          "maxFibers": 3456,
+          "environments": ["buried", "direct buried", "underground vault"],
+          "notes": "PLP's high-density dome closure: 13.33\" diameter × 29.47\" length — one of the largest dome closures available. Capacity: up to 1728 single-fiber splices (6 deep-profile trays) or 3456 fibers (12 thin-profile ribbon trays). Purpose-built for high-count feeder and backbone applications. Less common in distribution plant."
         }
       ],
-      "notes": "PLP is a significant North American OSP presence, particularly for aerial and direct-buried applications. Their hardware (strand clamps, cable lashers, anchors) is ubiquitous alongside fiber closures."
+      "notes": "PLP is a significant North American OSP presence, particularly for aerial and direct-buried applications. Their hardware (strand clamps, cable lashers, anchors) is ubiquitous alongside fiber closures. The Coyote brand is well-regarded for field durability and wide compatibility with various cable types."
     }
   ],
 
@@ -205,24 +206,24 @@
       "name": "12-Splice Standard Tray",
       "fusionCapacity": 12,
       "ribbonCapable": false,
-      "compatibleManufacturers": ["Corning", "AFL", "CommScope", "Generic 450-series"],
-      "notes": "The universal OSP splice tray. Holds 12 fusion or mechanical splices in individual heat-shrink sleeve holders. Two trays stacked = 24 positions. Used in virtually all OSP dome and inline closures. The 450-series standard is the most widely compatible."
+      "compatibleManufacturers": ["Generic 450-series compatible", "AFL Apex (with adapter)", "PLP Coyote"],
+      "notes": "The common OSP splice tray form factor. Holds 12 fusion or mechanical splices in individual heat-shrink sleeve holders. Used in distribution and access closures. Not all 12-splice trays are cross-compatible between closure brands — verify tray part number against the closure series before ordering."
     },
     {
-      "id": "24-splice-standard",
-      "name": "24-Splice Standard Tray",
-      "fusionCapacity": 24,
+      "id": "fosc-450-splice-array",
+      "name": "CommScope 450-Series Splice Array Module",
+      "fusionCapacity": 96,
       "ribbonCapable": false,
-      "compatibleManufacturers": ["Corning", "AFL"],
-      "notes": "Higher-capacity tray for large-count closures. Less common than 12-splice on distribution plant. Used in feeder and backbone closures with 144F+ cable counts where tray real estate is limited."
+      "compatibleManufacturers": ["CommScope FOSC-450"],
+      "notes": "Proprietary splice array tray for FOSC-450 series closures (A, B, C, D variants). Each module holds up to 96 single-fiber splices in a high-density arrangement. 8 modules in a FOSC-450D = 768 total single-fiber splices. Not interchangeable with standard 12-splice generic trays. Part numbers differ between FOSC-450 variants — always specify the closure model when ordering replacement trays."
     },
     {
       "id": "ribbon-tray-12",
       "name": "12-Ribbon Mass-Fusion Tray",
       "fusionCapacity": 144,
       "ribbonCapable": true,
-      "compatibleManufacturers": ["Corning", "AFL"],
-      "notes": "Designed for mass-fusion ribbon splicing. Holds 12 ribbon splices × 12 fibers each = 144 fibers per tray. Used in high-count OSP (144F, 288F, 432F cables). Requires a ribbon-capable mass-fusion splicer — a single-fiber splicer cannot splice ribbons. Dramatically faster than individual fusion splicing at high fiber counts."
+      "compatibleManufacturers": ["CommScope FOSC-450", "AFL Apex", "PLP Coyote HD"],
+      "notes": "Designed for mass-fusion ribbon splicing. Holds 12 ribbon splices × 12 fibers each = 144 fibers per tray. Used in high-count OSP (144F, 288F, 432F cables). Requires a ribbon-capable mass-fusion splicer — a single-fiber splicer cannot splice ribbons. Dramatically faster than individual fusion splicing at high fiber counts. Rollable ribbon (SpiderWeb Ribbon) trays can reach 288+ fibers per tray in compatible closures."
     }
   ],
 
@@ -230,7 +231,7 @@
     {
       "scenario": "Direct buried mid-span splice on distribution cable (24F–144F)",
       "recommendedTypeId": "dome",
-      "notes": "Dome with gel seal for maximum moisture protection. Size to cable fiber count plus 20% spare tray capacity. Mark closure location on as-built drawings — re-finding a buried closure without GPS coordinates is costly."
+      "notes": "Dome with gel seal (FOSC-450B or C, or AFL Apex X-1) for maximum moisture protection. Size to cable fiber count plus 20% spare tray capacity. Mark closure location on as-built drawings — re-finding a buried closure without GPS coordinates is costly."
     },
     {
       "scenario": "Aerial mid-span splice on lashed ADSS or figure-8 cable",
@@ -240,7 +241,7 @@
     {
       "scenario": "Underground vault splice on high-count feeder cable (288F+)",
       "recommendedTypeId": "dome",
-      "notes": "Large-capacity dome (FOSC-450 or equivalent) with ribbon tray capability for mass-fusion efficiency. Mechanical seal for clean vault re-entry. Leave adequate slack coil inside the vault for future splicing."
+      "notes": "Large-capacity dome (FOSC-450D or AFL Apex X-3) with ribbon tray capability for mass-fusion efficiency. Mechanical or wedge seal for clean vault re-entry. Leave adequate slack coil inside the vault for future splicing."
     },
     {
       "scenario": "FTTH distribution point / PON splitter location",

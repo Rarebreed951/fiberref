@@ -1,7 +1,15 @@
 import { useState } from "react";
-import { ScrollView, View, Text, TextInput, Pressable } from "react-native";
+import {
+  ScrollView,
+  View,
+  TextInput,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { Stack } from "expo-router";
 import AppShell from "../src/components/AppShell";
+import AppText from "../src/components/AppText";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -34,9 +42,9 @@ function parseDb(value: string): number {
 
 function SectionLabel({ title }: { title: string }) {
   return (
-    <Text className="text-[#555555] text-[10px] font-semibold uppercase tracking-wider mb-2">
+    <AppText size="xs" color="muted" className="font-semibold uppercase tracking-wider mb-2">
       {title}
-    </Text>
+    </AppText>
   );
 }
 
@@ -53,7 +61,7 @@ function DbInput({
 }) {
   return (
     <View className="flex-row items-center mb-2">
-      <Text className="text-[#A0A0A0] text-xs flex-1">{label}</Text>
+      <AppText size="xs" color="secondary" className="flex-1">{label}</AppText>
       <View className="flex-row items-center bg-[#111111] border border-[#2A2A2A] rounded-lg px-2 py-1.5">
         <TextInput
           value={value}
@@ -63,7 +71,7 @@ function DbInput({
           placeholderTextColor="#444444"
           selectTextOnFocus
         />
-        <Text className="text-[#555555] text-xs ml-1.5">{unit}</Text>
+        <AppText size="xs" color="muted" className="ml-1.5">{unit}</AppText>
       </View>
     </View>
   );
@@ -82,22 +90,22 @@ function Stepper({
 }) {
   return (
     <View className="flex-row items-center mb-2">
-      <Text className="text-[#A0A0A0] text-xs flex-1">{label}</Text>
+      <AppText size="xs" color="secondary" className="flex-1">{label}</AppText>
       <View className="flex-row items-center">
         <Pressable
           onPress={onDecrement}
           className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg w-8 h-8 items-center justify-center"
           hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
         >
-          <Text className="text-[#00FFFF] text-base font-bold">−</Text>
+          <AppText size="md" color="accentCyan" className="font-bold">−</AppText>
         </Pressable>
-        <Text className="text-white text-sm font-semibold w-8 text-center">{value}</Text>
+        <AppText size="sm" color="primary" className="font-semibold w-8 text-center">{value}</AppText>
         <Pressable
           onPress={onIncrement}
           className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg w-8 h-8 items-center justify-center"
           hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
         >
-          <Text className="text-[#00FFFF] text-base font-bold">+</Text>
+          <AppText size="md" color="accentCyan" className="font-bold">+</AppText>
         </Pressable>
       </View>
     </View>
@@ -125,16 +133,16 @@ function FiberPresetSelector({
                 : "border-[#2A2A2A] bg-[#111111]"
             }`}
           >
-            <Text
-              className={`text-xs font-semibold ${
-                isSelected ? "text-[#00FFFF]" : "text-[#555555]"
-              }`}
+            <AppText
+              size="xs"
+              color={isSelected ? "accentCyan" : "muted"}
+              className="font-semibold"
             >
               {preset.label}
-            </Text>
-            <Text className="text-[#444444] text-[10px]">
+            </AppText>
+            <AppText size="xs" color="muted">
               {preset.lossDbPerKm} dB/km
-            </Text>
+            </AppText>
           </Pressable>
         );
       })}
@@ -155,12 +163,12 @@ function ResultRow({
 }) {
   return (
     <View className="flex-row items-center py-1.5">
-      <Text className={`text-xs flex-1 ${dimmed ? "text-[#444444]" : "text-[#A0A0A0]"}`}>
+      <AppText size="xs" color={dimmed ? "muted" : "secondary"} className="flex-1">
         {label}
-      </Text>
-      <Text className={`text-xs font-semibold ${dimmed ? "text-[#444444]" : "text-white"}`}>
+      </AppText>
+      <AppText size="xs" color={dimmed ? "muted" : "primary"} className="font-semibold">
         {value.toFixed(2)} {unit}
-      </Text>
+      </AppText>
     </View>
   );
 }
@@ -169,25 +177,24 @@ function MarginResult({ margin }: { margin: number }) {
   const pass = margin >= 0;
   const borderColor = pass ? "border-[#00FF8855]" : "border-[#FF444455]";
   const bgColor = pass ? "bg-[#00FF8810]" : "bg-[#FF444410]";
-  const labelColor = pass ? "text-[#00FF88]" : "text-[#FF4444]";
-  const valueColor = pass ? "text-[#00FF88]" : "text-[#FF4444]";
+  const resultColor = pass ? "success" : "danger";
 
   return (
     <View className={`border rounded-xl p-3 mt-2 ${borderColor} ${bgColor}`}>
       <View className="flex-row items-center">
-        <Text className={`text-sm font-bold flex-1 ${labelColor}`}>
+        <AppText size="sm" color={resultColor} className="font-bold flex-1">
           {pass ? "PASS" : "FAIL"} — Link Margin
-        </Text>
-        <Text className={`text-lg font-bold ${valueColor}`}>
+        </AppText>
+        <AppText size="lg" color={resultColor} className="font-bold">
           {margin >= 0 ? "+" : ""}
           {margin.toFixed(2)} dB
-        </Text>
+        </AppText>
       </View>
       {!pass && (
-        <Text className="text-[#FF4444] text-[10px] mt-1 leading-4">
+        <AppText size="xs" color="danger" className="mt-1 leading-4">
           Link loss exceeds power budget. Reduce distance, reduce component count,
           or select a higher-power transceiver.
-        </Text>
+        </AppText>
       )}
     </View>
   );
@@ -232,6 +239,10 @@ export default function CalculatorScreen() {
   return (
     <AppShell showAd={false}>
       <Stack.Screen options={{ title: "Loss Budget Calculator" }} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingTop: 12, paddingBottom: 32 }}
@@ -247,10 +258,10 @@ export default function CalculatorScreen() {
             onChangeText={setRxSensitivity}
           />
           <View className="flex-row items-center mt-1">
-            <Text className="text-[#555555] text-xs flex-1">Power budget</Text>
-            <Text className="text-[#00FFFF] text-xs font-semibold">
+            <AppText size="xs" color="muted" className="flex-1">Power budget</AppText>
+            <AppText size="xs" color="accentCyan" className="font-semibold">
               {powerBudget.toFixed(2)} dB
-            </Text>
+            </AppText>
           </View>
         </View>
 
@@ -315,9 +326,9 @@ export default function CalculatorScreen() {
             onChangeText={setSystemMargin}
             unit="dB"
           />
-          <Text className="text-[#444444] text-[10px] leading-4 mt-1">
+          <AppText size="xs" color="muted" className="leading-4 mt-1">
             Typically 3 dB. Accounts for aging, repair splices, and measurement uncertainty.
-          </Text>
+          </AppText>
         </View>
 
         {/* Results */}
@@ -337,6 +348,7 @@ export default function CalculatorScreen() {
           <MarginResult margin={linkMargin} />
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </AppShell>
   );
 }
