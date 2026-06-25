@@ -8,10 +8,18 @@ export interface FavoriteEntry {
   subtitle: string;
 }
 
+const ALLOWED_ROUTES = new Set([
+  "/color-codes", "/otdr", "/iolm", "/enclosures",
+  "/fiber-types", "/optics", "/calculator", "/profiles",
+  "/search", "/favorites", "/settings", "/feedback", "/cable-config",
+]);
+
 export async function loadFavorites(): Promise<FavoriteEntry[]> {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as FavoriteEntry[]) : [];
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as FavoriteEntry[];
+    return parsed.filter((e) => ALLOWED_ROUTES.has(e.route));
   } catch {
     return [];
   }
