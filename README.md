@@ -45,3 +45,61 @@ A fast, offline-capable reference tool for fiber optic field professionals — s
 | Deployment | GitHub Pages via GitHub Actions |
 
 ---
+
+## Local Development
+
+```bash
+git clone https://github.com/Rarebreed951/fiberref.git
+cd fiberref
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173/fiberref/`.
+
+To build for production:
+
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## Data
+
+All reference data lives in `src/data/` as typed JSON files — no database, no API. Each module has a co-located `types.ts` defining the schema. Adding or updating reference data means editing the JSON and redeploying.
+
+```
+src/data/
+  colorCodes/     colorCodes.json + types.ts
+  otdr/           otdr.json + types.ts
+  iolm/           iolm.json + types.ts
+  enclosures/     enclosures.json + types.ts
+  fiberTypes/     fiberTypes.json + types.ts
+  optics/         optics.json + types.ts
+```
+
+User-created data (cable configs, customer profiles, favorites, font size preference) is stored in `localStorage` and never leaves the device.
+
+---
+
+## Deployment
+
+Pushes to `main` automatically build and deploy to GitHub Pages via the workflow in `.github/workflows/deploy.yml`. No manual steps required after the initial setup.
+
+---
+
+## Project Structure
+
+```
+src/
+  pages/        — one file per route
+  components/   — AppText, AppShell, ui primitives
+  context/      — CableConfigContext, FontSizeContext
+  storage/      — favorites persistence
+  data/         — reference JSON + TypeScript types
+  types/        — shared interfaces
+  constants/    — color tokens
+  theme/        — font size scale and text color map
+```
