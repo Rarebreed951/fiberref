@@ -1,6 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const KEY = "@fiberref/favorites";
+const KEY = "fiberref/favorites";
 
 export interface FavoriteEntry {
   id: string;
@@ -11,15 +9,18 @@ export interface FavoriteEntry {
 }
 
 export async function loadFavorites(): Promise<FavoriteEntry[]> {
-  const raw = await AsyncStorage.getItem(KEY);
-  return raw ? (JSON.parse(raw) as FavoriteEntry[]) : [];
+  try {
+    const raw = localStorage.getItem(KEY);
+    return raw ? (JSON.parse(raw) as FavoriteEntry[]) : [];
+  } catch {
+    return [];
+  }
 }
 
-async function persist(entries: FavoriteEntry[]): Promise<void> {
-  await AsyncStorage.setItem(KEY, JSON.stringify(entries));
+function persist(entries: FavoriteEntry[]): void {
+  localStorage.setItem(KEY, JSON.stringify(entries));
 }
 
-// Returns the full updated list and whether the entry is now favorited.
 export async function toggleFavorite(
   entry: FavoriteEntry
 ): Promise<{ favorites: FavoriteEntry[]; isNowFavorite: boolean }> {
@@ -28,6 +29,6 @@ export async function toggleFavorite(
   const updated = exists
     ? current.filter((e) => e.id !== entry.id)
     : [entry, ...current];
-  await persist(updated);
+  persist(updated);
   return { favorites: updated, isNowFavorite: !exists };
 }
